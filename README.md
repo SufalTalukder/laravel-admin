@@ -64,3 +64,6 @@ ipconfig getifaddr en0 (specifically)
     - 192.168.68.125
 php artisan serve --host=192.168.68.125 --port=8000
     - (run server)
+
+## GIT revert back code from GIT
+rm -rf .git;
