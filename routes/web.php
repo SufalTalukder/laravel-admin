@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\SystemController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 // Admin Routes
@@ -19,4 +20,5 @@ Route::prefix('admin')->group(function () {
     Route::get('/system-activity', [SystemController::class, 'loadSystemActivityView'])->name('adminSystemActivity');
     Route::get('/auth-user', [AuthController::class, 'loadAuthView'])->name('adminAuthUser');
     Route::get('/auth-permission', [AuthController::class, 'loadAuthPermissionView'])->name('adminAuthPermission');
+    Route::get('/user', [UserController::class, 'loadUserView'])->name('adminUser');
 });

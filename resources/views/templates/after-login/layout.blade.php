@@ -27,7 +27,6 @@
         <div class="container-xxl">
             <nav class="topbar-custom d-flex justify-content-between" id="topbar-custom">
 
-
                 <ul class="topbar-item list-unstyled d-inline-flex align-items-center mb-0">
                     <li>
                         <button class="nav-link mobile-menu-btn nav-icon" id="togglemenu">
@@ -50,17 +49,22 @@
                     <li class="dropdown">
                         <a class="nav-link dropdown-toggle arrow-none nav-icon" data-bs-toggle="dropdown" href="#"
                             role="button" aria-haspopup="false" aria-expanded="false">
-                            <img src="assets/images/flags/us_flag.jpg" alt="" class="thumb-sm rounded-circle">
+                            <img src="{{ asset('assets/images/flags/us_flag.jpg') }}" alt=""
+                                class="thumb-sm rounded-circle">
                         </a>
                         <div class="dropdown-menu">
-                            <a class="dropdown-item" href="#"><img src="assets/images/flags/us_flag.jpg"
-                                    alt="" height="15" class="me-2">English</a>
-                            <a class="dropdown-item" href="#"><img src="assets/images/flags/spain_flag.jpg"
-                                    alt="" height="15" class="me-2">Spanish</a>
-                            <a class="dropdown-item" href="#"><img src="assets/images/flags/germany_flag.jpg"
-                                    alt="" height="15" class="me-2">German</a>
-                            <a class="dropdown-item" href="#"><img src="assets/images/flags/french_flag.jpg"
-                                    alt="" height="15" class="me-2">French</a>
+                            <a class="dropdown-item" href="#"><img
+                                    src="{{ asset('assets/images/flags/us_flag.jpg') }}" alt="" height="15"
+                                    class="me-2">English</a>
+                            <a class="dropdown-item" href="#"><img
+                                    src="{{ asset('assets/images/flags/spain_flag.jpg') }}" alt=""
+                                    height="15" class="me-2">Spanish</a>
+                            <a class="dropdown-item" href="#"><img
+                                    src="{{ asset('assets/images/flags/germany_flag.jpg') }}" alt=""
+                                    height="15" class="me-2">German</a>
+                            <a class="dropdown-item" href="#"><img
+                                    src="{{ asset('assets/images/flags/french_flag.jpg') }}" alt=""
+                                    height="15" class="me-2">French</a>
                         </div>
                     </li><!--end topbar-language-->
 
@@ -279,13 +283,13 @@
                     <li class="dropdown topbar-item">
                         <a class="nav-link dropdown-toggle arrow-none nav-icon" data-bs-toggle="dropdown"
                             href="#" role="button" aria-haspopup="false" aria-expanded="false">
-                            <img src="assets/images/users/avatar-1.jpg" alt=""
+                            <img src="{{ asset('assets/images/users/avatar-1.jpg') }}" alt=""
                                 class="thumb-lg rounded-circle">
                         </a>
                         <div class="dropdown-menu dropdown-menu-end py-0">
                             <div class="d-flex align-items-center dropdown-item py-2 bg-secondary-subtle">
                                 <div class="flex-shrink-0">
-                                    <img src="assets/images/users/avatar-1.jpg" alt=""
+                                    <img src="{{ asset('assets/images/users/avatar-1.jpg') }}" alt=""
                                         class="thumb-md rounded-circle">
                                 </div>
                                 <div class="flex-grow-1 ms-2 text-truncate align-self-center">
@@ -329,7 +333,8 @@
                 <span class="">
                     <img src="{{ asset('assets/images/logo-light.png') }}" alt="logo-large"
                         class="logo-lg logo-light">
-                    <img src="{{ asset('assets/images/logo-dark.png') }}" alt="logo-large" class="logo-lg logo-dark">
+                    <img src="{{ asset('assets/images/logo-dark.png') }}" alt="logo-large"
+                        class="logo-lg logo-dark">
                 </span>
             </a>
         </div>
@@ -351,227 +356,90 @@
                             <a class="nav-link" href="{{ url('/admin/your-activity') }}" role="button"
                                 aria-expanded="false" aria-controls="sidebarDashboards">
                                 <i class="iconoir-calendar menu-icon"></i>
-                                <span>Track Your Activity</span>
+                                <span>Manage Your Activity</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('/admin/system-activity') }}" role="button"
                                 aria-expanded="false" aria-controls="sidebarElements">
                                 <i class="iconoir-compact-disc menu-icon"></i>
-                                <span>Track System Activity</span>
+                                <span>Manage System Activity</span>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#sidebarForms" data-bs-toggle="collapse" role="button"
                                 aria-expanded="false" aria-controls="sidebarForms">
                                 <i class="iconoir-journal-page menu-icon"></i>
-                                <span>Manage Auth User</span>
+                                <span>Auth User Management</span>
                             </a>
                             <div class="collapse " id="sidebarForms">
                                 <ul class="nav flex-column">
                                     <li class="nav-item">
-                                        <a class="nav-link" href="{{ url('/admin/auth-user') }}">Auth Users</a>
+                                        <a class="nav-link" href="{{ url('/admin/auth-user') }}">Manage Auth Users</a>
                                     </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="{{ url('/admin/auth-permission') }}">Auth Permissions</a>
+                                        <a class="nav-link" href="{{ url('/admin/auth-permission') }}">Manage Auth
+                                            Permissions</a>
                                     </li>
                                 </ul>
                             </div>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#sidebarCharts" data-bs-toggle="collapse" role="button"
+                            <a class="nav-link" href="{{ url('/admin/user') }}" role="button"
                                 aria-expanded="false" aria-controls="sidebarCharts">
                                 <i class="iconoir-candlestick-chart menu-icon"></i>
-                                <span>Charts</span>
+                                <span>User Management</span>
                             </a>
-                            <div class="collapse " id="sidebarCharts">
-                                <ul class="nav flex-column">
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="charts-apex.html">Apex</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="charts-justgage.html">JustGage</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="charts-chartjs.html">Chartjs</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="charts-toast-ui.html">Toast</a>
-                                    </li><!--end nav-item-->
-                                </ul><!--end nav-->
-                            </div><!--end startbarCharts-->
-                        </li><!--end nav-item-->
-                        <li class="nav-item">
-                            <a class="nav-link" href="#sidebarTables" data-bs-toggle="collapse" role="button"
-                                aria-expanded="false" aria-controls="sidebarTables">
-                                <i class="iconoir-table-rows menu-icon"></i>
-                                <span>Tables</span>
-                            </a>
-                            <div class="collapse " id="sidebarTables">
-                                <ul class="nav flex-column">
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="tables-basic.html">Basic</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="tables-datatable.html">Datatables</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="tables-editable.html">Editable</a>
-                                    </li><!--end nav-item-->
-                                </ul><!--end nav-->
-                            </div><!--end startbarTables-->
-                        </li><!--end nav-item-->
-                        <li class="nav-item">
-                            <a class="nav-link" href="#sidebarIcons" data-bs-toggle="collapse" role="button"
-                                aria-expanded="false" aria-controls="sidebarIcons">
-                                <i class="iconoir-trophy menu-icon"></i>
-                                <span>Icons</span>
-                            </a>
-                            <div class="collapse " id="sidebarIcons">
-                                <ul class="nav flex-column">
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="icons-fontawesome.html">Font Awesome</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="icons-lineawesome.html">Line Awesome</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="icons-icofont.html">Icofont</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="icons-iconoir.html">Iconoir</a>
-                                    </li><!--end nav-item-->
-                                </ul><!--end nav-->
-                            </div><!--end startbarIcons-->
-                        </li><!--end nav-item-->
-                        <li class="nav-item">
-                            <a class="nav-link" href="#sidebarMaps" data-bs-toggle="collapse" role="button"
-                                aria-expanded="false" aria-controls="sidebarMaps">
-                                <i class="iconoir-navigator-alt menu-icon"></i>
-                                <span>Maps</span>
-                            </a>
-                            <div class="collapse " id="sidebarMaps">
-                                <ul class="nav flex-column">
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="maps-google.html">Google Maps</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="maps-leaflet.html">Leaflet Maps</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="maps-vector.html">Vector Maps</a>
-                                    </li><!--end nav-item-->
-                                </ul><!--end nav-->
-                            </div><!--end startbarMaps-->
-                        </li><!--end nav-item-->
-                        <li class="nav-item">
-                            <a class="nav-link" href="#sidebarEmailTemplates" data-bs-toggle="collapse"
-                                role="button" aria-expanded="false" aria-controls="sidebarEmailTemplates">
-                                <i class="iconoir-send-mail menu-icon"></i>
-                                <span>Email Templates</span>
-                            </a>
-                            <div class="collapse " id="sidebarEmailTemplates">
-                                <ul class="nav flex-column">
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="email-templates-basic.html">Basic Action Email</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="email-templates-alert.html">Alert Email</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="email-templates-billing.html">Billing Email</a>
-                                    </li><!--end nav-item-->
-                                </ul><!--end nav-->
-                            </div><!--end startbarEmailTemplates-->
-                        </li><!--end nav-item-->
-                        <li class="menu-label mt-2">
-                            <small class="label-border">
-                                <div class="border_left hidden-xs"></div>
-                                <div class="border_right"></div>
-                            </small>
-                            <span>Crafted</span>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#sidebarPages" data-bs-toggle="collapse" role="button"
-                                aria-expanded="false" aria-controls="sidebarPages">
-                                <i class="iconoir-page-star menu-icon"></i>
-                                <span>Pages</span>
+                            <a class="nav-link" href="#sidebarForms1" data-bs-toggle="collapse" role="button"
+                                aria-expanded="false" aria-controls="sidebarForms">
+                                <i class="iconoir-journal-page menu-icon"></i>
+                                <span>Product Management</span>
                             </a>
-                            <div class="collapse " id="sidebarPages">
+                            <div class="collapse " id="sidebarForms1">
                                 <ul class="nav flex-column">
                                     <li class="nav-item">
-                                        <a class="nav-link" href="pages-profile.html">Profile</a>
-                                    </li><!--end nav-item-->
+                                        <a class="nav-link" href="{{ url('/admin/category') }}">Manage Categories</a>
+                                    </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="pages-notifications.html">Notifications</a>
-                                    </li><!--end nav-item-->
+                                        <a class="nav-link" href="{{ url('/admin/sub-category') }}">Manage Subcategories</a>
+                                    </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="pages-timeline.html">Timeline</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="pages-treeview.html">Treeview</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="pages-starter.html">Starter Page</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="pages-pricing.html">Pricing</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="pages-blogs.html">Blogs</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="pages-faq.html">FAQs</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="pages-gallery.html">Gallery</a>
-                                    </li><!--end nav-item-->
-                                </ul><!--end nav-->
-                            </div><!--end startbarPages-->
-                        </li><!--end nav-item-->
+                                        <a class="nav-link" href="{{ url('/admin/product') }}">Manage Products</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#sidebarAuthentication" data-bs-toggle="collapse"
-                                role="button" aria-expanded="false" aria-controls="sidebarAuthentication">
-                                <i class="iconoir-fingerprint-lock-circle menu-icon"></i>
-                                <span>Authentication</span>
+                            <a class="nav-link" href="{{ url('/admin/favourite') }}" role="button"
+                                aria-expanded="false" aria-controls="sidebarCharts">
+                                <i class="iconoir-candlestick-chart menu-icon"></i>
+                                <span>Add To Favourite Management</span>
                             </a>
-                            <div class="collapse " id="sidebarAuthentication">
-                                <ul class="nav flex-column">
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="auth-login.html">Log in</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="auth-register.html">Register</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="auth-recover-pw.html">Re-Password</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="auth-lock-screen.html">Lock Screen</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="auth-maintenance.html">Maintenance</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="auth-404.html">Error 404</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="auth-500.html">Error 500</a>
-                                    </li><!--end nav-item-->
-                                </ul><!--end nav-->
-                            </div><!--end startbarAuthentication-->
-                        </li><!--end nav-item-->
-                    </ul><!--end navbar-nav--->
-                    <div class="update-msg text-center">
-                        <div
-                            class="d-flex justify-content-center align-items-center thumb-lg update-icon-box  rounded-circle mx-auto">
-                            <i class="iconoir-peace-hand h3 align-self-center mb-0 text-primary"></i>
-                        </div>
-                        <h5 class="mt-3">Mannat Themes</h5>
-                        <p class="mb-3 text-muted">Rizz is a high quality web applications.</p>
-                        <a href="javascript: void(0);" class="btn text-primary shadow-sm rounded-pill">Upgrade your
-                            plan</a>
-                    </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('/admin/cart') }}" role="button"
+                                aria-expanded="false" aria-controls="sidebarCharts">
+                                <i class="iconoir-candlestick-chart menu-icon"></i>
+                                <span>Add To Cart Management</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('/admin/newsletter') }}" role="button"
+                                aria-expanded="false" aria-controls="sidebarCharts">
+                                <i class="iconoir-candlestick-chart menu-icon"></i>
+                                <span>Newsletter Management</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('/admin/support') }}" role="button"
+                                aria-expanded="false" aria-controls="sidebarCharts">
+                                <i class="iconoir-candlestick-chart menu-icon"></i>
+                                <span>Support Tickets Management</span>
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </div><!--end startbar-collapse-->
         </div><!--end startbar-menu-->
