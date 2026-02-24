@@ -4,7 +4,7 @@
 <head>
 
     <meta charset="utf-8" />
-    <title>{{ 'BMS Laravel Admin - ' . $title }}</title>
+    <title>@yield('title') - BMS Laravel Admin</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
     <meta content="" name="author" />
@@ -13,6 +13,7 @@
     <!-- App favicon -->
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
 
+    <link href="{{ asset('assets/libs/simple-datatables/style.css') }}" rel="stylesheet" type="text/css" />
     <!-- App css -->
     <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" type="text/css" />
@@ -339,287 +340,44 @@
                 <div class="d-flex align-items-start flex-column w-100">
                     <!-- Navigation -->
                     <ul class="navbar-nav mb-auto w-100">
-                        <li class="menu-label pt-0 mt-0">
-                            <!-- <small class="label-border">
-                                <div class="border_left hidden-xs"></div>
-                                <div class="border_right"></div>
-                            </small> -->
-                            <span>Main Menu</span>
-                        </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#sidebarDashboards" data-bs-toggle="collapse" role="button"
+                            <a class="nav-link" href="{{ url('/admin/dashboard') }}" role="button"
                                 aria-expanded="false" aria-controls="sidebarDashboards">
                                 <i class="iconoir-home-simple menu-icon"></i>
-                                <span>Dashboards</span>
+                                <span>Dashboard</span>
                             </a>
-                            <div class="collapse " id="sidebarDashboards">
-                                <ul class="nav flex-column">
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="index.html">Analytics</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="ecommerce-index.html">Ecommerce</a>
-                                    </li><!--end nav-item-->
-                                </ul><!--end nav-->
-                            </div><!--end startbarDashboards-->
-                        </li><!--end nav-item-->
-                        <li class="nav-item">
-                            <a class="nav-link" href="#sidebarApplications" data-bs-toggle="collapse" role="button"
-                                aria-expanded="false" aria-controls="sidebarApplications">
-                                <i class="iconoir-view-grid menu-icon"></i>
-                                <span>Applications</span>
-                            </a>
-                            <div class="collapse " id="sidebarApplications">
-                                <ul class="nav flex-column">
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#sidebarAnalytics" data-bs-toggle="collapse"
-                                            role="button" aria-expanded="false" aria-controls="sidebarAnalytics">
-                                            <span>Analytics</span>
-                                        </a>
-                                        <div class="collapse " id="sidebarAnalytics">
-                                            <ul class="nav flex-column">
-                                                <li class="nav-item">
-                                                    <a href="analytics-customers.html" class="nav-link ">Customers</a>
-                                                </li><!--end nav-item-->
-                                                <li class="nav-item">
-                                                    <a href="analytics-reports.html" class="nav-link ">Reports</a>
-                                                </li><!--end nav-item-->
-                                            </ul><!--end nav-->
-                                        </div>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#sidebarProjects" data-bs-toggle="collapse"
-                                            role="button" aria-expanded="false" aria-controls="sidebarProjects">
-                                            <span>Projects</span>
-                                        </a>
-                                        <div class="collapse " id="sidebarProjects">
-                                            <ul class="nav flex-column">
-                                                <li class="nav-item">
-                                                    <a class="nav-link" href="projects-clients.html">Clients</a>
-                                                </li><!--end nav-item-->
-                                                <li class="nav-item">
-                                                    <a class="nav-link" href="projects-team.html">Team</a>
-                                                </li><!--end nav-item-->
-                                                <li class="nav-item">
-                                                    <a class="nav-link" href="projects-project.html">Project</a>
-                                                </li><!--end nav-item-->
-                                                <li class="nav-item">
-                                                    <a class="nav-link" href="projects-task.html">Task</a>
-                                                </li><!--end nav-item-->
-                                                <li class="nav-item">
-                                                    <a class="nav-link" href="projects-kanban-board.html">Kanban
-                                                        Board</a>
-                                                </li><!--end nav-item-->
-                                                <li class="nav-item">
-                                                    <a class="nav-link" href="projects-chat.html">Chat</a>
-                                                </li><!--end nav-item-->
-                                                <li class="nav-item">
-                                                    <a class="nav-link" href="projects-users.html">Users</a>
-                                                </li><!--end nav-item-->
-                                                <li class="nav-item">
-                                                    <a class="nav-link" href="projects-create.html">Project Create</a>
-                                                </li><!--end nav-item-->
-                                            </ul><!--end nav-->
-                                        </div>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#sidebarEcommerce" data-bs-toggle="collapse"
-                                            role="button" aria-expanded="false" aria-controls="sidebarEcommerce">
-                                            <span>Ecommerce</span>
-                                        </a>
-                                        <div class="collapse " id="sidebarEcommerce">
-                                            <ul class="nav flex-column">
-                                                <li class="nav-item">
-                                                    <a class="nav-link" href="ecommerce-products.html">Products</a>
-                                                </li><!--end nav-item-->
-                                                <li class="nav-item">
-                                                    <a class="nav-link" href="ecommerce-customers.html">Customers</a>
-                                                </li><!--end nav-item-->
-                                                <li class="nav-item">
-                                                    <a class="nav-link"
-                                                        href="ecommerce-customer-details.html">Customer Details</a>
-                                                </li><!--end nav-item-->
-                                                <li class="nav-item">
-                                                    <a class="nav-link" href="ecommerce-orders.html">Orders</a>
-                                                </li><!--end nav-item-->
-                                                <li class="nav-item">
-                                                    <a class="nav-link" href="ecommerce-order-details.html">Order
-                                                        Details</a>
-                                                </li><!--end nav-item-->
-                                                <li class="nav-item">
-                                                    <a class="nav-link" href="ecommerce-refunds.html">Refunds</a>
-                                                </li><!--end nav-item-->
-                                            </ul><!--end nav-->
-                                        </div>
-                                    </li><!--end nav-item-->
-
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="apps-chat.html">Chat</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="apps-contact-list.html">Contact List</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="apps-calendar.html">Calendar</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="apps-invoice.html">Invoice</a>
-                                    </li><!--end nav-item-->
-                                </ul><!--end nav-->
-                            </div><!--end startbarApplications-->
-                        </li><!--end nav-item-->
-                        <li class="menu-label mt-2">
-                            <small class="label-border">
-                                <div class="border_left hidden-xs"></div>
-                                <div class="border_right"></div>
-                            </small>
-                            <span>Components</span>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#sidebarElements" data-bs-toggle="collapse" role="button"
+                            <a class="nav-link" href="{{ url('/admin/your-activity') }}" role="button"
+                                aria-expanded="false" aria-controls="sidebarDashboards">
+                                <i class="iconoir-calendar menu-icon"></i>
+                                <span>Track Your Activity</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('/admin/system-activity') }}" role="button"
                                 aria-expanded="false" aria-controls="sidebarElements">
                                 <i class="iconoir-compact-disc menu-icon"></i>
-                                <span>UI Elements</span>
+                                <span>Track System Activity</span>
                             </a>
-                            <div class="collapse " id="sidebarElements">
-                                <ul class="nav flex-column">
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="ui-alerts.html">Alerts</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="ui-avatar.html">Avatar</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="ui-buttons.html">Buttons</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="ui-badges.html">Badges</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="ui-cards.html">Cards</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="ui-carousels.html">Carousels</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="ui-dropdowns.html">Dropdowns</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="ui-grids.html">Grids</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="ui-images.html">Images</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="ui-list.html">List</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="ui-modals.html">Modals</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="ui-navs.html">Navs</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="ui-navbar.html">Navbar</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="ui-paginations.html">Paginations</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="ui-popover-tooltips.html">Popover & Tooltips</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="ui-progress.html">Progress</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="ui-spinners.html">Spinners</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="ui-tabs-accordions.html">Tabs & Accordions</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="ui-typography.html">Typography</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="ui-videos.html">Videos</a>
-                                    </li><!--end nav-item-->
-                                </ul><!--end nav-->
-                            </div><!--end startbarElements-->
-                        </li><!--end nav-item-->
-                        <li class="nav-item">
-                            <a class="nav-link" href="#sidebarAdvancedUI" data-bs-toggle="collapse" role="button"
-                                aria-expanded="false" aria-controls="sidebarAdvancedUI">
-                                <i class="iconoir-peace-hand menu-icon"></i>
-                                <span>Advanced UI</span><span
-                                    class="badge rounded text-success bg-success-subtle ms-1">New</span>
-                            </a>
-                            <div class="collapse " id="sidebarAdvancedUI">
-                                <ul class="nav flex-column">
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="advanced-animation.html">Animation</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="advanced-clipboard.html">Clip Board</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="advanced-dragula.html">Dragula</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="advanced-files.html">File Manager</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="advanced-highlight.html">Highlight</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="advanced-rangeslider.html">Range Slider</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="advanced-ratings.html">Ratings</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="advanced-ribbons.html">Ribbons</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="advanced-sweetalerts.html">Sweet Alerts</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="advanced-toasts.html">Toasts</a>
-                                    </li><!--end nav-item-->
-                                </ul><!--end nav-->
-                            </div><!--end startbarAdvancedUI-->
-                        </li><!--end nav-item-->
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#sidebarForms" data-bs-toggle="collapse" role="button"
                                 aria-expanded="false" aria-controls="sidebarForms">
                                 <i class="iconoir-journal-page menu-icon"></i>
-                                <span>Forms</span>
+                                <span>Manage Auth User</span>
                             </a>
                             <div class="collapse " id="sidebarForms">
                                 <ul class="nav flex-column">
                                     <li class="nav-item">
-                                        <a class="nav-link" href="forms-elements.html">Basic Elements</a>
-                                    </li><!--end nav-item-->
+                                        <a class="nav-link" href="{{ url('/admin/auth-user') }}">Auth Users</a>
+                                    </li>
                                     <li class="nav-item">
-                                        <a class="nav-link" href="forms-advanced.html">Advance Elements</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="forms-validation.html">Validation</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="forms-wizard.html">Wizard</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="forms-editors.html">Editors</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="forms-uploads.html">File Upload</a>
-                                    </li><!--end nav-item-->
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="forms-img-crop.html">Image Crop</a>
-                                    </li><!--end nav-item-->
-                                </ul><!--end nav-->
-                            </div><!--end startbarForms-->
-                        </li><!--end nav-item-->
+                                        <a class="nav-link" href="{{ url('/admin/auth-permission') }}">Auth Permissions</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#sidebarCharts" data-bs-toggle="collapse" role="button"
                                 aria-expanded="false" aria-controls="sidebarCharts">
@@ -821,3 +579,19 @@
 
     <div class="startbar-overlay d-print-none"></div>
     <!-- end leftbar-tab-menu-->
+
+    @yield('content')
+
+    <script src="{{ asset('assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('assets/libs/simplebar/simplebar.min.js') }}"></script>
+    <script src="{{ asset('assets/libs/apexcharts/apexcharts.min.js') }}"></script>
+    <script src="{{ asset('assets/js/pages/profile.init.js') }}"></script>
+    <script src="{{ asset('assets/libs/simplebar/simplebar.min.js') }}"></script>
+    <script src="{{ asset('assets/libs/fullcalendar/index.global.min.js') }}"></script>
+    <script src="{{ asset('assets/js/pages/calendar.init.js') }}"></script>
+    <script src="{{ asset('assets/libs/simple-datatables/umd/simple-datatables.js') }}"></script>
+    <script src="{{ asset('assets/js/pages/datatable.init.js') }}"></script>
+    <script src="{{ asset('assets/js/app.js') }}"></script>
+</body>
+
+</html>

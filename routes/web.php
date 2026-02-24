@@ -1,12 +1,22 @@
 <?php
 
+use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\SystemController;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'templates.admin.login')->name('adminLogin');
+// Admin Routes
+Route::redirect('/', '/admin/login');
+Route::redirect('/admin', '/admin/login')->name('adminLogin');
 
 Route::prefix('admin')->group(function () {
-    Route::view('/', 'templates.admin.login')->name('adminLogin');
-    Route::view('/login', 'templates.admin.login')->name('adminLogin');
-    Route::view('/register', 'templates.admin.register')->name('adminRegister');
-    Route::view('/dashboard', 'templates.admin.dashboard')->name('adminDashboard');
+    Route::get('/login', [LoginController::class, 'loadLoginView'])->name('adminLogin');
+    Route::get('/register', [LoginController::class, 'loadRegisterView'])->name('adminRegister');
+    Route::get('/dashboard', [DashboardController::class, 'loadDashboardView'])->name('adminDashboard');
+    Route::get('/your-activity', [ActivityController::class, 'loadActivityView'])->name('adminActivity');
+    Route::get('/system-activity', [SystemController::class, 'loadSystemActivityView'])->name('adminSystemActivity');
+    Route::get('/auth-user', [AuthController::class, 'loadAuthView'])->name('adminAuthUser');
+    Route::get('/auth-permission', [AuthController::class, 'loadAuthPermissionView'])->name('adminAuthPermission');
 });
