@@ -27,25 +27,25 @@
                                             <label class="form-label" for="useremail">Email</label>
                                             <input type="email" class="form-control" id="useremail" name="user email"
                                                 placeholder="Enter email">
-                                        </div><!--end form-group-->
+                                        </div>
 
                                         <div class="form-group mb-2">
                                             <label class="form-label" for="mobileNo">Mobile Number</label>
                                             <input type="text" class="form-control" id="mobileNo" name="mobile number"
                                                 placeholder="Enter Mobile Number">
-                                        </div><!--end form-group-->
+                                        </div>
 
                                         <div class="form-group mb-2">
                                             <label class="form-label" for="userpassword">Password</label>
                                             <input type="password" class="form-control" name="password" id="userpassword"
                                                 placeholder="Enter password">
-                                        </div><!--end form-group-->
+                                        </div>
 
                                         <div class="form-group mb-2">
                                             <label class="form-label" for="Confirmpassword">ConfirmPassword</label>
                                             <input type="password" class="form-control" name="password" id="Confirmpassword"
                                                 placeholder="Enter Confirm password">
-                                        </div><!--end form-group-->
+                                        </div>
 
                                         <div class="form-group row mt-3">
                                             <div class="col-12">
@@ -56,8 +56,8 @@
                                                         you agree to the Rizz <a href="#" class="text-primary">Terms
                                                             of Use</a></label>
                                                 </div>
-                                            </div><!--end col-->
-                                        </div><!--end form-group-->
+                                            </div>
+                                        </div>
 
                                         <div class="form-group mb-0 row">
                                             <div class="col-12">
@@ -65,9 +65,9 @@
                                                     <button class="btn btn-primary" type="button">Register <i
                                                             class="fas fa-sign-in-alt ms-1"></i></button>
                                                 </div>
-                                            </div><!--end col-->
-                                        </div> <!--end form-group-->
-                                    </form><!--end form-->
+                                            </div>
+                                        </div>
+                                    </form>
                                     <div class="text-center">
                                         <p class="text-muted">Already have an account ? <a href="{{ route('adminLogin') }}"
                                                 class="text-primary ms-2">Log in</a></p>
@@ -80,4 +80,29 @@
             </div><!--end col-->
         </div><!--end row-->
     </div>
+
+@section('scripts')
+    <script type="text/javascript">
+        document.addEventListener("DOMContentLoaded", function() {
+            const usernameInput = document.getElementById('username').value.trim();
+            const passwordInput = document.getElementById('userpassword').value.trim();
+            const loginButton = document.getElementById('clickLoginButton');
+
+            loginButton.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                if (!usernameInput || !passwordInput) {
+                    showToast("Username & Password is required!", "error");
+                    return;
+                }
+                if (username === 'admin' && password === 'admin') {
+                    window.location.href = "{{ url('admin/dashboard') }}";
+                } else {
+                    showToast('Invalid username or password. Please try again.');
+                }
+            });
+        });
+    </script>
+@endsection
+
 @endsection

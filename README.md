@@ -67,3 +67,12 @@ php artisan serve --host=192.168.68.125 --port=8000
 
 ## GIT revert back code from GIT
 rm -rf .git;
+
+## ###########################################
+## # PASSWORD HASH BYCRYPT CODE GENERATE ## #
+## #########################################
+## <?php
+## $password = '123';
+## $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+## echo $hashedPassword;
+## ?>
