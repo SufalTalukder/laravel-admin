@@ -27,6 +27,7 @@ Route::prefix('admin')->middleware('auth.jwt')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'loadDashboardView'])->name('adminDashboard');
     Route::get('/your-activity', [ActivityController::class, 'loadActivityView'])->name('adminActivity');
     Route::get('/system-activity', [SystemController::class, 'loadSystemActivityView'])->name('adminSystemActivity');
+    Route::get('/system-activity/{id}', [SystemController::class, 'loadSystemActivityView'])->name('adminSystemActivityView');
     Route::get('/auth-user', [AuthController::class, 'loadAuthView'])->name('adminAuthUser');
     Route::get('/auth-permission', [AuthController::class, 'loadAuthPermissionView'])->name('adminAuthPermission');
     Route::get('/user', [UserController::class, 'loadUserView'])->name('adminUser');
