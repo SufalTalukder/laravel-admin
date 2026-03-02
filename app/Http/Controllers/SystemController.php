@@ -21,20 +21,56 @@ class SystemController extends Controller
         });
     }
 
-    public function loadSystemActivityView(Request $request, $id = null)
+    // load system activity view
+    public function index()
     {
         $authUser = Auth::user();
-        $systemActivities = SystemActivityModel::latest()->get();
-        $selectedActivity = null;
+        return view('templates.admin.system-activity', [
+            'authData' => $authUser
+        ]);
+    }
 
-        if ($id) {
-            $selectedActivity = SystemActivityModel::find($id);
+    // load activites + filter by status
+    public function fetchSystemActivities(Request $request)
+    {
+        $login_status = $request->input('login_status', []);
+
+        if (!is_array($login_status)) {
+            $login_status = [$login_status];
         }
 
-        return view('templates.admin.system-activity', [
-            'authData' => $authUser,
-            'systemActivitiesList' => $systemActivities,
-            'selectedActivity' => $selectedActivity
+        $query = SystemActivityModel::query();
+
+        if (!empty($login_status) && !in_array('all', $login_status)) {
+            $query->whereIn('login_status', $login_status);
+        }
+
+        $systemActivities = $query->latest()->get();
+
+        return response()->json([
+            'systemActivitiesList' => $systemActivities
+        ]);
+    }
+
+    // delete activites
+    public function deleteSystemActivities(Request $request)
+    {
+        $dlt_ids = $request->input('dlt_ids', []);
+
+        if (!is_array($dlt_ids)) {
+            $dlt_ids = [$dlt_ids];
+        }
+
+        if (empty($dlt_ids)) {
+            return response()->json([
+                'message' => 'No records selected.'
+            ], 400);
+        }
+
+        SystemActivityModel::whereIn('auth_login_audit_id', $dlt_ids)->delete();
+
+        return response()->json([
+            'message' => 'Selected activities deleted successfully.'
         ]);
     }
 }

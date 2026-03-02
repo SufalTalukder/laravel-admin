@@ -20,14 +20,22 @@ Route::prefix('admin')->middleware('guest.jwt')->group(function () {
     Route::get('/register', [LoginController::class, 'loadRegisterView'])->name('adminRegister');
 });
 
+// Route::get('/admin/system-activity/fetch', [SystemController::class, 'fetchSystemActivities'])->name('adminSystemActivityStatusView');
+
 // After Login Routes Group
 Route::prefix('admin')->middleware('auth.jwt')->group(function () {
     Route::get('/logout', [LoginController::class, 'logout']);
     Route::post('/logout', [LoginController::class, 'logout'])->name('adminLogout');
+
     Route::get('/dashboard', [DashboardController::class, 'loadDashboardView'])->name('adminDashboard');
+
     Route::get('/your-activity', [ActivityController::class, 'loadActivityView'])->name('adminActivity');
-    Route::get('/system-activity', [SystemController::class, 'loadSystemActivityView'])->name('adminSystemActivity');
-    Route::get('/system-activity/{id}', [SystemController::class, 'loadSystemActivityView'])->name('adminSystemActivityView');
+
+    Route::get('/system-activity', [SystemController::class, 'index'])->name('adminSystemActivityView');
+    Route::get('/system-activity/fetch', [SystemController::class, 'fetchSystemActivities'])->name('adminSystemActivityStatusView');
+    Route::get('/system-activity/{id}', [SystemController::class, 'loadSystemActivityDetailView'])->name('adminSystemActivityDetailView');
+    Route::post('/admin/system-activity/delete', [SystemController::class, 'deleteSystemActivities'])->name('adminSystemActivityDeleteView');
+
     Route::get('/auth-user', [AuthController::class, 'loadAuthView'])->name('adminAuthUser');
     Route::get('/auth-permission', [AuthController::class, 'loadAuthPermissionView'])->name('adminAuthPermission');
     Route::get('/user', [UserController::class, 'loadUserView'])->name('adminUser');
@@ -35,7 +43,7 @@ Route::prefix('admin')->middleware('auth.jwt')->group(function () {
     Route::get('/sub-category', [ProductController::class, 'loadSubCategoryView'])->name('adminProductSubCategory');
 });
 
-// 404 Not Route
+// 404 Not Found Route
 Route::fallback(function () {
     return view('templates.admin.errors.page-not-found');
 });

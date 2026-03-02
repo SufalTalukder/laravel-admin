@@ -3,6 +3,7 @@
 @section('title', 'Manage System Activity')
 
 @section('content')
+    {{-- body layout --}}
     <div class="page-wrapper">
         <div class="page-content">
             <div class="container-xxl">
@@ -17,6 +18,11 @@
                                     <div class="col-auto">
                                         <form class="row g-2">
                                             <div class="col-auto">
+                                                <button type="button" class="btn btn-danger delete-selected" disabled>
+                                                    Delete Selected
+                                                </button>
+                                            </div>
+                                            <div class="col-auto">
                                                 <a class="btn bg-primary-subtle text-primary dropdown-toggle d-flex align-items-center arrow-none"
                                                     data-bs-toggle="dropdown" href="#" role="button"
                                                     aria-haspopup="false" aria-expanded="false"
@@ -26,52 +32,24 @@
                                                 <div class="dropdown-menu dropdown-menu-start">
                                                     <div class="p-2">
                                                         <div class="form-check mb-2">
-                                                            <input type="checkbox" class="form-check-input" checked
-                                                                id="filter-all">
+                                                            <input type="checkbox" class="form-check-input"
+                                                                id="filterCheckbox" checked>
                                                             <label class="form-check-label" for="filter-all">
                                                                 All
                                                             </label>
                                                         </div>
                                                         <div class="form-check mb-2">
-                                                            <input type="checkbox" class="form-check-input" checked
-                                                                id="filter-one">
-                                                            <label class="form-check-label" for="filter-one">
-                                                                New
+                                                            <input type="checkbox" class="form-check-input"
+                                                                id="filter-success">
+                                                            <label class="form-check-label" for="filter-success">
+                                                                Success
                                                             </label>
                                                         </div>
                                                         <div class="form-check mb-2">
-                                                            <input type="checkbox" class="form-check-input" checked
-                                                                id="filter-two">
-                                                            <label class="form-check-label" for="filter-two">
-                                                                VIP
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check mb-2">
-                                                            <input type="checkbox" class="form-check-input" checked
-                                                                id="filter-three">
-                                                            <label class="form-check-label" for="filter-three">
-                                                                Repeat
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check mb-2">
-                                                            <input type="checkbox" class="form-check-input" checked
-                                                                id="filter-four">
-                                                            <label class="form-check-label" for="filter-four">
-                                                                Referral
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check mb-2">
-                                                            <input type="checkbox" class="form-check-input" checked
-                                                                id="filter-five">
-                                                            <label class="form-check-label" for="filter-five">
-                                                                Inactive
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input type="checkbox" class="form-check-input" checked
-                                                                id="filter-six">
-                                                            <label class="form-check-label" for="filter-six">
-                                                                Loyal
+                                                            <input type="checkbox" class="form-check-input"
+                                                                id="filter-failed">
+                                                            <label class="form-check-label" for="filter-failed">
+                                                                Failed
                                                             </label>
                                                         </div>
                                                     </div>
@@ -108,64 +86,7 @@
                                                 <th class="text-end">Action</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            @forelse($systemActivitiesList as $index => $activity)
-                                                <tr>
-                                                    <td style="width: 16px;">
-                                                        <div class="form-check">
-                                                            <input type="checkbox" class="form-check-input" name="check"
-                                                                id="customCheck1">
-                                                        </div>
-                                                    </td>
-                                                    <td>{{ $index + 1 }}</td>
-                                                    <td>{{ $activity->browser ?? 'N/A' }}</td>
-                                                    <td>{{ $activity->device_type ?? 'N/A' }}</td>
-                                                    <td>{{ $activity->ip_address ?? 'N/A' }}</td>
-                                                    <td>
-                                                        @if ($activity->login_status == 'success')
-                                                            <span class="badge bg-success">Success</span>
-                                                        @else
-                                                            <span class="badge bg-danger">Failed</span>
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        {{ $activity->login_time->format('d M Y h:i A') }}
-                                                    </td>
-                                                    <td>{{ $activity->operating_system ?? 'N/A' }}</td>
-                                                    <td>
-                                                        @if ($activity->referrer_url)
-                                                            <a href="{{ $activity->referrer_url }}" target="_blank">
-                                                                {{ \Illuminate\Support\Str::limit($activity->referrer_url, 30) }}
-                                                            </a>
-                                                        @else
-                                                            N/A
-                                                        @endif
-                                                    </td>
-                                                    <td class="text-end">
-                                                        <a class="view-details" data-bs-toggle="modal"
-                                                            data-bs-target="#exampleModalScrollable"
-                                                            data-browser="{{ $activity->browser }}"
-                                                            data-browser_version="{{ $activity->browser_version }}"
-                                                            data-os="{{ $activity->operating_system }}"
-                                                            data-os_version="{{ $activity->os_version }}"
-                                                            data-device="{{ $activity->device_type }}"
-                                                            data-ip="{{ $activity->ip_address }}"
-                                                            data-country="{{ $activity->country }}"
-                                                            data-state="{{ $activity->state }}"
-                                                            data-city="{{ $activity->city }}"
-                                                            data-lat="{{ $activity->lat }}"
-                                                            data-long="{{ $activity->long }}"
-                                                            data-status="{{ $activity->login_status }}"
-                                                            data-login_time="{{ $activity->login_time->format('d M Y h:i A') }}">
-                                                            <i class="las la-eye text-secondary fs-18"></i>
-                                                        </a>
-                                                    </td>
-                                                </tr>
-                                            @empty
-                                                <tr>
-                                                    <td colspan="9" class="text-center">No System Activity Found</td>
-                                                </tr>
-                                            @endforelse
+                                        <tbody id="systemActivityTable">
                                         </tbody>
                                     </table>
                                 </div>
@@ -173,18 +94,43 @@
                         </div>
                     </div> <!-- end col -->
                 </div> <!-- end row -->
-            </div><!-- container -->
-            <!--end footer-->
+            </div>
+
+            <!-- start footer-->
+            <footer class="footer text-center text-sm-start d-print-none">
+                <div class="container-xxl">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card mb-0 rounded-bottom-0">
+                                <div class="card-body">
+                                    <p class="text-muted mb-0">
+                                        ©
+                                        <script>
+                                            document.write(new Date().getFullYear())
+                                        </script>
+                                        Rizz
+                                        <span class="text-muted d-none d-sm-inline-block float-end">
+                                            Crafted with
+                                            <i class="iconoir-heart text-danger"></i>
+                                            by Mannatthemes</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+            <!-- end footer-->
         </div>
     </div>
 
     {{-- view modal --}}
     <div class="modal fade" id="exampleModalScrollable" tabindex="-1" role="dialog"
-        aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+        aria-labelledby="exampleModalScrollableTitle" aria-hidden="true" data-bs-toggle="#static">
         <div class="modal-dialog modal-dialog-scrollable" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h6 class="modal-title m-0" id="exampleModalScrollableTitle">Center Modal</h6>
+                    <h6 class="modal-title m-0" id="exampleModalScrollableTitle">View Details</h6>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div><!--end modal-header-->
                 <div class="modal-body">
@@ -221,53 +167,186 @@
                         <div class="col-6 text-end" id="modal_status"></div>
 
                     </div>
-                </div><!--end modal-body-->
+                </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary btn-sm">Save changes</button>
-                </div><!--end modal-footer-->
-            </div><!--end modal-content-->
-        </div><!--end modal-dialog-->
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            document.querySelectorAll(".view-details").forEach(a => {
-                a.addEventListener("click", function() {
-                    document.getElementById("modal_browser").innerText =
-                        this.dataset.browser + " " + (this.dataset.browser_version ?? '');
+    <script type="text/javascript">
+        $(document).ready(function() {
 
-                    document.getElementById("modal_os").innerText =
-                        this.dataset.os + " " + (this.dataset.os_version ?? '');
+            // Global variable
+            let totalActivitiesLength = 0;
 
-                    document.getElementById("modal_device").innerText =
-                        this.dataset.device ?? 'N/A';
+            // Load records with filter
+            function loadSystemActivity() {
+                let filters = [];
 
-                    document.getElementById("modal_ip").innerText =
-                        this.dataset.ip ?? 'N/A';
+                if ($('#filterCheckbox').is(':checked')) filters.push('all');
+                if ($('#filter-success').is(':checked')) filters.push('success');
+                if ($('#filter-failed').is(':checked')) filters.push('failed');
 
-                    document.getElementById("modal_country").innerText =
-                        this.dataset.country ?? 'N/A';
+                $('#systemActivityTable').html('<tr><td colspan="10" class="text-center">Loading...</td></tr>');
 
-                    document.getElementById("modal_state").innerText =
-                        this.dataset.state ?? 'N/A';
+                $.ajax({
+                    url: "{{ route('adminSystemActivityStatusView') }}",
+                    type: "GET",
+                    data: {
+                        login_status: filters
+                    },
+                    success: function(response) {
+                        let activities = response.systemActivitiesList;
+                        // Length stored inside global variable
+                        totalActivitiesLength = response.systemActivitiesList.length;
+                        let tbody = '';
 
-                    document.getElementById("modal_city").innerText =
-                        this.dataset.city ?? 'N/A';
+                        if (activities.length > 0) {
+                            $.each(activities, function(index, activity) {
+                                tbody += '<tr>';
+                                tbody +=
+                                    '<td style="width:16px;"><div class="form-check"><input type="checkbox" class="form-check-input" value="' +
+                                    activity.auth_login_audit_id + '"></div></td>';
+                                tbody += '<td>' + (index + 1) + '</td>';
+                                tbody += '<td>' + (activity.browser ?? 'N/A') + '</td>';
+                                tbody += '<td>' + (activity.device_type ?? 'N/A') + '</td>';
+                                tbody += '<td>' + (activity.ip_address ?? 'N/A') + '</td>';
+                                tbody += '<td>' + (activity.login_status === 'success' ?
+                                    '<span class="badge bg-success">Success</span>' :
+                                    '<span class="badge bg-danger">Failed</span>') + '</td>';
+                                tbody += '<td>' + activity.login_time + '</td>';
+                                tbody += '<td>' + (activity.operating_system ?? 'N/A') +
+                                    '</td>';
+                                tbody += '<td>' + (activity.referrer_url ? '<a href="' +
+                                        activity.referrer_url + '" target="_blank">' + activity
+                                        .referrer_url.substring(0, 30) + '</a>' : 'N/A') +
+                                    '</td>';
+                                tbody += '<td class="text-end">';
+                                tbody +=
+                                    '<a class="view-details" data-bs-toggle="modal" data-bs-target="#exampleModalScrollable" ' +
+                                    'data-browser="' + (activity.browser ?? '') + '" ' +
+                                    'data-browser_version="' + (activity.browser_version ??
+                                        '') + '" ' +
+                                    'data-os="' + (activity.operating_system ?? '') + '" ' +
+                                    'data-os_version="' + (activity.os_version ?? '') + '" ' +
+                                    'data-device="' + (activity.device_type ?? '') + '" ' +
+                                    'data-ip="' + (activity.ip_address ?? '') + '" ' +
+                                    'data-country="' + (activity.country ?? '') + '" ' +
+                                    'data-state="' + (activity.state ?? '') + '" ' +
+                                    'data-city="' + (activity.city ?? '') + '" ' +
+                                    'data-lat="' + (activity.lat ?? '') + '" ' +
+                                    'data-long="' + (activity.long ?? '') + '" ' +
+                                    'data-status="' + activity.login_status + '" ' +
+                                    'data-login_time="' + activity.login_time + '">' +
+                                    '<i class="las la-eye text-secondary fs-18"></i></a>';
+                                tbody += '</td>';
+                                tbody += '</tr>';
+                            });
+                        } else {
+                            tbody =
+                                '<tr><td colspan="10" class="text-center">No System Activity Found</td></tr>';
+                        }
+                        $('#systemActivityTable').html(tbody);
+                    },
+                    error: function(xhr) {
+                        console.error("Error in System Activity: ", xhr);
+                        $('#systemActivityTable').html(
+                            '<tr><td colspan="10" class="text-center text-danger">Error loading data</td></tr>'
+                        );
+                    }
+                });
+            }
 
-                    document.getElementById("modal_latlong").innerText =
-                        (this.dataset.lat ?? '') + " / " + (this.dataset.long ?? '');
+            // View details
+            $(document).on('click', '.view-details', function() {
+                $('#modal_browser').text($(this).data('browser') + ' ' + ($(this).data('browser_version') ??
+                    ''));
+                $('#modal_os').text($(this).data('os') + ' ' + ($(this).data('os_version') ?? ''));
+                $('#modal_device').text($(this).data('device') ?? 'N/A');
+                $('#modal_ip').text($(this).data('ip') ?? 'N/A');
+                $('#modal_country').text($(this).data('country') ?? 'N/A');
+                $('#modal_state').text($(this).data('state') ?? 'N/A');
+                $('#modal_city').text($(this).data('city') ?? 'N/A');
+                $('#modal_latlong').text(($(this).data('lat') ?? '') + ' / ' + ($(this).data('long') ??
+                    ''));
+                $('#modal_login_time').text($(this).data('login_time') ?? '');
+                let status = $(this).data('status');
+                $('#modal_status').html(status === 'success' ?
+                    '<span class="badge bg-success">Success</span>' :
+                    '<span class="badge bg-danger">Failed</span>');
+            });
 
-                    document.getElementById("modal_login_time").innerText =
-                        this.dataset.login_time ?? '';
+            // Delete multiple records
+            // Check select all
+            $('#select-all').on('change', function() {
+                $('#systemActivityTable input.form-check-input')
+                    .prop('checked', this.checked);
 
-                    let status = this.dataset.status;
-                    document.getElementById("modal_status").innerHTML =
-                        status === 'success' ?
-                        '<span class="badge bg-success">Success</span>' :
-                        '<span class="badge bg-danger">Failed</span>';
+                if (this.checked) {
+                    $('.delete-selected').prop('disabled', false);
+                } else {
+                    $('.delete-selected').prop('disabled', true);
+                }
+            });
+
+            // Check each checkbox
+            $(document).on('change', '.form-check-input', function() {
+                let countCheckboxs = [];
+
+                $('#systemActivityTable input.form-check-input:checked').each(function() {
+                    countCheckboxs.push($(this).val());
+                });
+
+                if (countCheckboxs.length > 0) {
+                    $('.delete-selected').prop('disabled', false);
+                } else {
+                    $('.delete-selected').prop('disabled', true);
+                }
+
+                if (totalActivitiesLength === countCheckboxs.length) {
+                    $('#select-all').prop('checked', true);
+                } else {
+                    $('#select-all').prop('checked', false);
+                }
+            });
+
+            // Delete selected records
+            $(document).on('click', '.delete-selected', function() {
+                let deleteCheckboxs = [];
+
+                $('#systemActivityTable input.form-check-input:checked').each(function() {
+                    deleteCheckboxs.push($(this).val());
+                });
+
+                if (!confirm('Are you sure! you want to delete selected records?')) {
+                    return;
+                }
+
+                $.ajax({
+                    url: "{{ route('adminSystemActivityDeleteView') }}",
+                    type: "POST",
+                    data: {
+                        dlt_ids: deleteCheckboxs,
+                        _token: "{{ csrf_token() }}"
+                    },
+                    success: function(response) {
+                        alert(response.message);
+                        $('.delete-selected').prop('disabled',
+                            true); // Disable button after success
+                        loadSystemActivity();
+                    },
+                    error: function(xhr) {
+                        console.error("Delete Error: ", xhr);
+                        alert('Error deleting records.');
+                    }
                 });
             });
+
+            $('#filterCheckbox, #filter-success, #filter-failed').on('change', loadSystemActivity);
+
+            loadSystemActivity();
         });
     </script>
 @endsection

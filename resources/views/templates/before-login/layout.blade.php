@@ -60,14 +60,6 @@
                     };
                 @endif
             });
-            
-            // Remove dashboard from history after logout
-            window.history.replaceState(null, null, window.location.href);
-
-            window.history.pushState(null, null, window.location.href);
-            window.onpopstate = function() {
-                window.history.go(1);
-            };
         </script>
 
     </body>
