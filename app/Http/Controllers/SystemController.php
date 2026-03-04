@@ -21,7 +21,7 @@ class SystemController extends Controller
         });
     }
 
-    // load system activity view
+    // Load view
     public function index()
     {
         $authUser = Auth::user();
@@ -30,7 +30,7 @@ class SystemController extends Controller
         ]);
     }
 
-    // load activites + filter by status
+    // Load activites with filterations
     public function fetchSystemActivities(Request $request)
     {
         $login_status = $request->input('login_status', []);
@@ -52,7 +52,7 @@ class SystemController extends Controller
         ]);
     }
 
-    // delete activites
+    // Delete activites
     public function deleteSystemActivities(Request $request)
     {
         $dlt_ids = $request->input('dlt_ids', []);

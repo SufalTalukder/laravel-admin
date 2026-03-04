@@ -61,12 +61,12 @@
                             </div><!--end card-header-->
                             <div class="card-body pt-0">
                                 <button type="button" class="btn btn-sm btn-primary csv">Export CSV</button>
-                                <button type="button" class="btn btn-sm btn-primary sql">Export SQL</button>
-                                <button type="button" class="btn btn-sm btn-primary txt">Export TXT</button>
-                                <button type="button" class="btn btn-sm btn-primary json">Export JSON</button>
+                                <button type="button" class="btn btn-sm btn-primary excel">Export EXCEL</button>
+                                <button type="button" class="btn btn-sm btn-primary pdf">Export PDF</button>
+                                <button type="button" class="btn btn-sm btn-primary doc">Export DOC</button>
 
                                 <div class="table-responsive pt-3">
-                                    <table class="table mb-0 checkbox-all" id="datatable_2">
+                                    <table class="table mb-0 checkbox-all pt-2" id="datatable_2" data-title="System Activity Log">
                                         <thead class="table-light">
                                             <tr>
                                                 <th style="width: 16px;">
@@ -86,7 +86,8 @@
                                                 <th class="text-end">Action</th>
                                             </tr>
                                         </thead>
-                                        <tbody id="systemActivityTable">
+                                        <tbody>
+                                            {{-- dynamic content --}}
                                         </tbody>
                                     </table>
                                 </div>
@@ -177,89 +178,127 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
-
-            // Global variable
-            let totalActivitiesLength = 0;
-
-            // Load records with filter
-            function loadSystemActivity() {
-                let filters = [];
-
-                if ($('#filterCheckbox').is(':checked')) filters.push('all');
-                if ($('#filter-success').is(':checked')) filters.push('success');
-                if ($('#filter-failed').is(':checked')) filters.push('failed');
-
-                $('#systemActivityTable').html('<tr><td colspan="10" class="text-center">Loading...</td></tr>');
-
-                $.ajax({
+            let table = $('#datatable_2').DataTable({
+                processing: false,
+                serverSide: false,
+                ajax: {
                     url: "{{ route('adminSystemActivityStatusView') }}",
                     type: "GET",
-                    data: {
-                        login_status: filters
-                    },
-                    success: function(response) {
-                        let activities = response.systemActivitiesList;
-                        // Length stored inside global variable
-                        totalActivitiesLength = response.systemActivitiesList.length;
-                        let tbody = '';
+                    dataSrc: "systemActivitiesList",
+                    data: function(d) {
+                        let filters = [];
 
-                        if (activities.length > 0) {
-                            $.each(activities, function(index, activity) {
-                                tbody += '<tr>';
-                                tbody +=
-                                    '<td style="width:16px;"><div class="form-check"><input type="checkbox" class="form-check-input" value="' +
-                                    activity.auth_login_audit_id + '"></div></td>';
-                                tbody += '<td>' + (index + 1) + '</td>';
-                                tbody += '<td>' + (activity.browser ?? 'N/A') + '</td>';
-                                tbody += '<td>' + (activity.device_type ?? 'N/A') + '</td>';
-                                tbody += '<td>' + (activity.ip_address ?? 'N/A') + '</td>';
-                                tbody += '<td>' + (activity.login_status === 'success' ?
-                                    '<span class="badge bg-success">Success</span>' :
-                                    '<span class="badge bg-danger">Failed</span>') + '</td>';
-                                tbody += '<td>' + activity.login_time + '</td>';
-                                tbody += '<td>' + (activity.operating_system ?? 'N/A') +
-                                    '</td>';
-                                tbody += '<td>' + (activity.referrer_url ? '<a href="' +
-                                        activity.referrer_url + '" target="_blank">' + activity
-                                        .referrer_url.substring(0, 30) + '</a>' : 'N/A') +
-                                    '</td>';
-                                tbody += '<td class="text-end">';
-                                tbody +=
-                                    '<a class="view-details" data-bs-toggle="modal" data-bs-target="#exampleModalScrollable" ' +
-                                    'data-browser="' + (activity.browser ?? '') + '" ' +
-                                    'data-browser_version="' + (activity.browser_version ??
-                                        '') + '" ' +
-                                    'data-os="' + (activity.operating_system ?? '') + '" ' +
-                                    'data-os_version="' + (activity.os_version ?? '') + '" ' +
-                                    'data-device="' + (activity.device_type ?? '') + '" ' +
-                                    'data-ip="' + (activity.ip_address ?? '') + '" ' +
-                                    'data-country="' + (activity.country ?? '') + '" ' +
-                                    'data-state="' + (activity.state ?? '') + '" ' +
-                                    'data-city="' + (activity.city ?? '') + '" ' +
-                                    'data-lat="' + (activity.lat ?? '') + '" ' +
-                                    'data-long="' + (activity.long ?? '') + '" ' +
-                                    'data-status="' + activity.login_status + '" ' +
-                                    'data-login_time="' + activity.login_time + '">' +
-                                    '<i class="las la-eye text-secondary fs-18"></i></a>';
-                                tbody += '</td>';
-                                tbody += '</tr>';
-                            });
+                        let allChecked = $('#filterCheckbox').is(':checked');
+                        let successChecked = $('#filter-success').is(':checked');
+                        let failedChecked = $('#filter-failed').is(':checked');
+
+                        if (allChecked) {
+                            filters = ['all'];
                         } else {
-                            tbody =
-                                '<tr><td colspan="10" class="text-center">No System Activity Found</td></tr>';
+                            if (successChecked) filters.push('success');
+                            if (failedChecked) filters.push('failed');
                         }
-                        $('#systemActivityTable').html(tbody);
-                    },
-                    error: function(xhr) {
-                        console.error("Error in System Activity: ", xhr);
-                        $('#systemActivityTable').html(
-                            '<tr><td colspan="10" class="text-center text-danger">Error loading data</td></tr>'
-                        );
-                    }
-                });
-            }
 
-            // View details
+                        d.login_status = filters;
+                    }
+                },
+                columns: [{
+                        data: 'auth_login_audit_id',
+                        orderable: false,
+                        searchable: false,
+                        render: function(data) {
+                            return `
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input row-checkbox" value="${data}">
+                                </div>`;
+                        }
+                    },
+                    {
+                        data: null,
+                        render: function(data, type, row, meta) {
+                            return meta.row + 1;
+                        }
+                    },
+                    {
+                        data: 'browser',
+                        defaultContent: 'N/A'
+                    },
+                    {
+                        data: 'device_type',
+                        defaultContent: 'N/A'
+                    },
+                    {
+                        data: 'ip_address',
+                        defaultContent: 'N/A'
+                    },
+                    {
+                        data: 'login_status',
+                        render: function(data) {
+                            return data === 'success' ?
+                                '<span class="badge bg-success">Success</span>' :
+                                '<span class="badge bg-danger">Failed</span>';
+                        }
+                    },
+                    {
+                        data: 'login_time'
+                    },
+                    {
+                        data: 'operating_system',
+                        defaultContent: 'N/A'
+                    },
+                    {
+                        data: 'referrer_url',
+                        render: function(data) {
+                            return data ?
+                                `<a href="${data}" target="_blank">${data.substring(0, 30)}</a>` :
+                                'N/A';
+                        }
+                    },
+                    {
+                        data: null,
+                        orderable: false,
+                        searchable: false,
+                        render: function(data) {
+                            return `
+                                <a class="view-details"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#exampleModalScrollable"
+                                    data-browser="${data.browser ?? ''}"
+                                    data-browser_version="${data.browser_version ?? ''}"
+                                    data-os="${data.operating_system ?? ''}"
+                                    data-os_version="${data.os_version ?? ''}"
+                                    data-device="${data.device_type ?? ''}"
+                                    data-ip="${data.ip_address ?? ''}"
+                                    data-country="${data.country ?? ''}"
+                                    data-state="${data.state ?? ''}"
+                                    data-city="${data.city ?? ''}"
+                                    data-lat="${data.lat ?? ''}"
+                                    data-long="${data.long ?? ''}"
+                                    data-status="${data.login_status}"
+                                    data-login_time="${data.login_time}">
+                                    <i class="las la-eye text-secondary fs-18"></i>
+                                </a>`;
+                        }
+                    }
+                ]
+            });
+
+            // Reload table when filters change
+            $('#filterCheckbox').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $('#filter-success, #filter-failed').prop('checked', false);
+                }
+                table.ajax.reload();
+            });
+
+            $('#filter-success, #filter-failed').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $('#filterCheckbox').prop('checked', false);
+                }
+                table.ajax.reload();
+            });
+
+            // View details modal
             $(document).on('click', '.view-details', function() {
                 $('#modal_browser').text($(this).data('browser') + ' ' + ($(this).data('browser_version') ??
                     ''));
@@ -272,55 +311,43 @@
                 $('#modal_latlong').text(($(this).data('lat') ?? '') + ' / ' + ($(this).data('long') ??
                     ''));
                 $('#modal_login_time').text($(this).data('login_time') ?? '');
+
                 let status = $(this).data('status');
-                $('#modal_status').html(status === 'success' ?
+                $('#modal_status').html(
+                    status === 'success' ?
                     '<span class="badge bg-success">Success</span>' :
-                    '<span class="badge bg-danger">Failed</span>');
+                    '<span class="badge bg-danger">Failed</span>'
+                );
             });
 
-            // Delete multiple records
-            // Check select all
+            // Individual checkboxes
             $('#select-all').on('change', function() {
-                $('#systemActivityTable input.form-check-input')
-                    .prop('checked', this.checked);
-
-                if (this.checked) {
-                    $('.delete-selected').prop('disabled', false);
-                } else {
-                    $('.delete-selected').prop('disabled', true);
-                }
+                $('.row-checkbox').prop('checked', this.checked);
+                toggleDeleteButton();
             });
 
-            // Check each checkbox
-            $(document).on('change', '.form-check-input', function() {
-                let countCheckboxs = [];
+            $(document).on('change', '.row-checkbox', function() {
+                let total = $('.row-checkbox').length;
+                let checked = $('.row-checkbox:checked').length;
 
-                $('#systemActivityTable input.form-check-input:checked').each(function() {
-                    countCheckboxs.push($(this).val());
-                });
-
-                if (countCheckboxs.length > 0) {
-                    $('.delete-selected').prop('disabled', false);
-                } else {
-                    $('.delete-selected').prop('disabled', true);
-                }
-
-                if (totalActivitiesLength === countCheckboxs.length) {
-                    $('#select-all').prop('checked', true);
-                } else {
-                    $('#select-all').prop('checked', false);
-                }
+                $('#select-all').prop('checked', total === checked);
+                toggleDeleteButton();
             });
 
-            // Delete selected records
+            function toggleDeleteButton() {
+                let checkedCount = $('.row-checkbox:checked').length;
+                $('.delete-selected').prop('disabled', checkedCount === 0);
+            }
+
+            // Delete Selected
             $(document).on('click', '.delete-selected', function() {
-                let deleteCheckboxs = [];
+                let ids = [];
 
-                $('#systemActivityTable input.form-check-input:checked').each(function() {
-                    deleteCheckboxs.push($(this).val());
+                $('.row-checkbox:checked').each(function() {
+                    ids.push($(this).val());
                 });
-
-                if (!confirm('Are you sure! you want to delete selected records?')) {
+                if (ids.length === 0) return;
+                if (!confirm('Are you sure you want to delete selected records?')) {
                     return;
                 }
 
@@ -328,25 +355,21 @@
                     url: "{{ route('adminSystemActivityDeleteView') }}",
                     type: "POST",
                     data: {
-                        dlt_ids: deleteCheckboxs,
+                        dlt_ids: ids,
                         _token: "{{ csrf_token() }}"
                     },
                     success: function(response) {
                         alert(response.message);
-                        $('.delete-selected').prop('disabled',
-                            true); // Disable button after success
-                        loadSystemActivity();
+                        table.ajax.reload();
+                        $('.delete-selected').prop('disabled', true);
+                        $('#select-all').prop('checked', false);
                     },
                     error: function(xhr) {
-                        console.error("Delete Error: ", xhr);
+                        console.error(xhr);
                         alert('Error deleting records.');
                     }
                 });
             });
-
-            $('#filterCheckbox, #filter-success, #filter-failed').on('change', loadSystemActivity);
-
-            loadSystemActivity();
         });
     </script>
 @endsection
