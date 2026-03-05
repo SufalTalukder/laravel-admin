@@ -70,7 +70,7 @@ class SystemController extends Controller
         SystemActivityModel::whereIn('auth_login_audit_id', $dlt_ids)->delete();
 
         return response()->json([
-            'message' => 'Selected activities deleted successfully.'
+            'message' => 'Selected records deleted successfully.'
         ]);
     }
 }

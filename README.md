@@ -76,3 +76,20 @@ rm -rf .git;
 ## $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 ## echo $hashedPassword;
 ## ?>
+
+## If you prefer to do it the proper way (drop FK → alter → re-add FK), here's the full safe version:
+## -- 1. Drop the foreign key constraint
+ALTER TABLE app_banner_tbl 
+    DROP FOREIGN KEY FK67ofqglhd0me70b37p0n7kexj;
+
+## -- 2. Alter auth_tbl primary key
+ALTER TABLE auth_tbl 
+    MODIFY COLUMN auth_user_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT;
+
+## -- 3. Re-add the foreign key
+ALTER TABLE app_banner_tbl 
+    ADD CONSTRAINT FK67ofqglhd0me70b37p0n7kexj 
+    FOREIGN KEY (auth_user_id) 
+    REFERENCES auth_tbl(auth_user_id) 
+    ON DELETE CASCADE   -- adjust to match your original constraint
+    ON UPDATE CASCADE;

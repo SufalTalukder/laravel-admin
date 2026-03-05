@@ -34,10 +34,16 @@ Route::prefix('admin')->middleware('auth.jwt')->group(function () {
     Route::get('/system-activity', [SystemController::class, 'index'])->name('adminSystemActivityView');
     Route::get('/system-activity/fetch', [SystemController::class, 'fetchSystemActivities'])->name('adminSystemActivityStatusView');
     Route::get('/system-activity/{id}', [SystemController::class, 'loadSystemActivityDetailView'])->name('adminSystemActivityDetailView');
-    Route::post('/admin/system-activity/delete', [SystemController::class, 'deleteSystemActivities'])->name('adminSystemActivityDeleteView');
+    Route::post('/system-activity/delete', [SystemController::class, 'deleteSystemActivities'])->name('adminSystemActivityDeleteView');
 
-    Route::get('/auth-user', [AuthController::class, 'loadAuthView'])->name('adminAuthUser');
+    Route::get('/auth-user', [AuthController::class, 'index'])->name('adminAuthUserView');
+    Route::get('/auth-user/fetchAll', [AuthController::class, 'fetchAllAuthUsers'])->name('adminAuthUsersListView');
+    Route::get('/auth-user/{id}', [AuthController::class, 'fetchAuthUserDetails'])->name('adminAuthUserDetailsView');
+    Route::post('/auth-user/createAndUpdate', [AuthController::class, 'createAndUpdateAuthUser'])->name('adminAuthUserCreateAndUpdate');
+    Route::post('/auth-user/deleteMultiple', [AuthController::class, 'deleteMultipleAuthUser'])->name('adminDeleteMultipleAuthUser');
+
     Route::get('/auth-permission', [AuthController::class, 'loadAuthPermissionView'])->name('adminAuthPermission');
+
     Route::get('/user', [UserController::class, 'loadUserView'])->name('adminUser');
     Route::get('category', [ProductController::class, 'loadCategoryView'])->name('adminProductCategory');
     Route::get('/sub-category', [ProductController::class, 'loadSubCategoryView'])->name('adminProductSubCategory');
