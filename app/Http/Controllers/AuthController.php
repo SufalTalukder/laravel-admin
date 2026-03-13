@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\AuthModel;
+use App\Models\AuthPermissionModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -23,6 +25,7 @@ class AuthController extends Controller
         });
     }
 
+    // AUTH USERS
     // LOAD PAGE VIEW
     public function index()
     {
@@ -182,9 +185,76 @@ class AuthController extends Controller
         ]);
     }
 
-    // PERMISSION VIEW PAGE
+    // AUTH PERMISSION
+    // LOAD PAGE VIEW
     public function loadAuthPermissionView()
     {
-        return view('templates.admin.auth-permission');
+        $authUser = Auth::user();
+        return view('templates.admin.auth-permission', [
+            'authData' => $authUser
+        ]);
+    }
+
+    public function fetchAllAuthPermission()
+    {
+        $authUsers = AuthModel::from('auth_tbl AS a')
+            ->select(
+                'a.auth_user_id',
+                'a.auth_user_name',
+                'a.auth_user_image',
+                'p.add_permission',
+                'p.view_all_permission',
+                'p.view_permission',
+                'p.edit_permission',
+                'p.delete_permission',
+                'p.auth_permission_id',
+                'ab.auth_user_name AS actionByName'
+            )
+            ->leftJoin('auth_permission_tbl AS p', 'p.auth_user_id', '=', 'a.auth_user_id')
+            ->leftJoin('auth_tbl AS ab', 'ab.auth_user_id', '=', 'p.action_by_user_id')
+            ->where('a.auth_user_status', 'YES')
+            ->get();
+
+        return response()->json([
+            'authUsersList' => $authUsers
+        ]);
+    }
+
+    public function storeAuthPermission(Request $request)
+    {
+        $authUser = Auth::user();
+        $request->validate([
+            'auth_user_id'          => 'required|exists:auth_tbl,auth_user_id',
+            'add_permission'        => 'required|in:YES,NO',
+            'view_all_permission'   => 'required|in:YES,NO',
+            'view_permission'       => 'required|in:YES,NO',
+            'edit_permission'       => 'required|in:YES,NO',
+            'delete_permission'     => 'required|in:YES,NO',
+        ]);
+
+        $actionBy = $authUser->auth_user_id;
+        $auth_permission_id = $request->auth_permission_id;
+
+        $data = [
+            'auth_user_id'        => $request->auth_user_id,
+            'add_permission'      => $request->add_permission,
+            'view_all_permission' => $request->view_all_permission,
+            'view_permission'     => $request->view_permission,
+            'edit_permission'     => $request->edit_permission,
+            'delete_permission'   => $request->delete_permission,
+            'action_by_user_id'   => $actionBy,
+        ];
+
+        if ($auth_permission_id) {
+            AuthPermissionModel::where('auth_permission_id', $auth_permission_id)->update($data);
+            $message = 'Permissions modified successfully.';
+        } else {
+            AuthPermissionModel::create($data);
+            $message = 'Permissions modified successfully.';
+        }
+
+        return response()->json([
+            'message' => $message
+        ]);
     }
 }

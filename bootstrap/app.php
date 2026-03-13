@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\JWTAuthMiddleware;
 use App\Http\Middleware\RedirectIfAuthenticatedJWT;
+use App\Http\Middleware\ThrottleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -16,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'auth.jwt'  => JWTAuthMiddleware::class,
             'guest.jwt' => RedirectIfAuthenticatedJWT::class,
+            'throttle.admin' => ThrottleMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

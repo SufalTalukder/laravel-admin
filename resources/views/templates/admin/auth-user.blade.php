@@ -264,7 +264,7 @@
                 processing: false,
                 serverSide: false,
                 ajax: {
-                    url: "{{ route('adminAuthUsersListView') }}",
+                    url: "{{ route('adminAuthUser.list') }}",
                     type: "GET",
                     dataSrc: "authUsersList",
                     data: function(d) {
@@ -540,7 +540,7 @@
                 spinner.removeClass('d-none');
 
                 $.ajax({
-                    url: "{{ route('adminAuthUserCreateAndUpdate') }}",
+                    url: "{{ route('adminAuthUser.store') }}",
                     type: "POST",
                     data: formData,
                     processData: false,
@@ -583,7 +583,7 @@
                 if (!confirm('Are you sure you want to delete this record?')) return;
 
                 $.ajax({
-                    url: "{{ route('adminDeleteMultipleAuthUser') }}",
+                    url: "{{ route('adminAuthUser.bulkDelete') }}",
                     type: "POST",
                     data: {
                         dlt_ids: [id],
@@ -632,7 +632,7 @@
                 if (!confirm('Are you sure you want to delete selected records?')) return;
 
                 $.ajax({
-                    url: "{{ route('adminDeleteMultipleAuthUser') }}",
+                    url: "{{ route('adminAuthUser.bulkDelete') }}",
                     type: "POST",
                     data: {
                         dlt_ids: ids,

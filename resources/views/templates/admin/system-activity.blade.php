@@ -182,7 +182,7 @@
                 processing: false,
                 serverSide: false,
                 ajax: {
-                    url: "{{ route('adminSystemActivityStatusView') }}",
+                    url: "{{ route('adminSystemActivity.fetch') }}",
                     type: "GET",
                     dataSrc: "systemActivitiesList",
                     data: function(d) {
@@ -352,7 +352,7 @@
                 }
 
                 $.ajax({
-                    url: "{{ route('adminSystemActivityDeleteView') }}",
+                    url: "{{ route('adminSystemActivity.bulkDelete') }}",
                     type: "POST",
                     data: {
                         dlt_ids: ids,

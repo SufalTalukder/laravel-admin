@@ -9,47 +9,58 @@ use App\Http\Controllers\SystemController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
-// Admin Routes
 Route::redirect('/', '/admin/login');
 Route::redirect('/admin', '/admin/login')->name('adminLogin');
 
-// Before Login Routes Group
-Route::prefix('admin')->middleware('guest.jwt')->group(function () {
-    Route::get('/login', [LoginController::class, 'loadLoginView'])->name('adminLoginViewPage');
-    Route::post('/login', [LoginController::class, 'adminLogin']);
+Route::prefix('admin')->middleware(['guest.jwt', 'throttle.admin:5,1'])->group(function () {
+    Route::get('/login',    [LoginController::class, 'loadLoginView'])->name('adminLoginViewPage');
+    Route::post('/login',   [LoginController::class, 'adminLogin'])->name('adminLoginPost');
     Route::get('/register', [LoginController::class, 'loadRegisterView'])->name('adminRegister');
 });
 
-// Route::get('/admin/system-activity/fetch', [SystemController::class, 'fetchSystemActivities'])->name('adminSystemActivityStatusView');
-
-// After Login Routes Group
-Route::prefix('admin')->middleware('auth.jwt')->group(function () {
-    Route::get('/logout', [LoginController::class, 'logout']);
+Route::prefix('admin')->middleware(['auth.jwt', 'throttle.admin:60,1'])->group(function () {
+    // Auth
     Route::post('/logout', [LoginController::class, 'logout'])->name('adminLogout');
 
+    // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'loadDashboardView'])->name('adminDashboard');
 
+    // Activity
     Route::get('/your-activity', [ActivityController::class, 'loadActivityView'])->name('adminActivity');
 
-    Route::get('/system-activity', [SystemController::class, 'index'])->name('adminSystemActivityView');
-    Route::get('/system-activity/fetch', [SystemController::class, 'fetchSystemActivities'])->name('adminSystemActivityStatusView');
-    Route::get('/system-activity/{id}', [SystemController::class, 'loadSystemActivityDetailView'])->name('adminSystemActivityDetailView');
-    Route::post('/system-activity/delete', [SystemController::class, 'deleteSystemActivities'])->name('adminSystemActivityDeleteView');
+    // System Activity
+    Route::prefix('system-activity')->name('adminSystemActivity.')->group(function () {
+        Route::get('/',             [SystemController::class, 'index'])->name('index');
+        Route::get('/fetch',        [SystemController::class, 'fetchSystemActivities'])->name('fetch');
+        Route::get('/{activity}',   [SystemController::class, 'loadSystemActivityDetailView'])->name('show');
+        Route::delete('/bulk',      [SystemController::class, 'deleteSystemActivities'])->name('bulkDelete');
+    });
 
-    Route::get('/auth-user', [AuthController::class, 'index'])->name('adminAuthUserView');
-    Route::get('/auth-user/fetchAll', [AuthController::class, 'fetchAllAuthUsers'])->name('adminAuthUsersListView');
-    Route::get('/auth-user/{id}', [AuthController::class, 'fetchAuthUserDetails'])->name('adminAuthUserDetailsView');
-    Route::post('/auth-user/createAndUpdate', [AuthController::class, 'createAndUpdateAuthUser'])->name('adminAuthUserCreateAndUpdate');
-    Route::post('/auth-user/deleteMultiple', [AuthController::class, 'deleteMultipleAuthUser'])->name('adminDeleteMultipleAuthUser');
+    // Auth Users
+    Route::prefix('auth-user')->name('adminAuthUser.')->group(function () {
+        Route::get('/',              [AuthController::class, 'index'])->name('index');
+        Route::get('/list',          [AuthController::class, 'fetchAllAuthUsers'])->name('list');
+        Route::post('/',             [AuthController::class, 'createAndUpdateAuthUser'])->name('store');
+        Route::delete('/bulk',       [AuthController::class, 'deleteMultipleAuthUser'])->name('bulkDelete');
+        Route::get('/{user}',        [AuthController::class, 'fetchAuthUserDetails'])->name('show');
+    });
 
-    Route::get('/auth-permission', [AuthController::class, 'loadAuthPermissionView'])->name('adminAuthPermission');
+    // Auth Permissions
+    Route::prefix('/auth-permission')->name('adminAuthPermission.')->group(function () {
+        Route::get('/',             [AuthController::class, 'loadAuthPermissionView'])->name('index');
+        Route::get('/list',         [AuthController::class, 'fetchAllAuthPermission'])->name('list');
+        Route::post('/',            [AuthController::class, 'storeAuthPermission'])->name('store');
+    });
 
+    // Users
     Route::get('/user', [UserController::class, 'loadUserView'])->name('adminUser');
-    Route::get('category', [ProductController::class, 'loadCategoryView'])->name('adminProductCategory');
-    Route::get('/sub-category', [ProductController::class, 'loadSubCategoryView'])->name('adminProductSubCategory');
+
+    // Products
+    Route::prefix('category')->name('adminProduct.')->group(function () {
+        Route::get('/',         [ProductController::class, 'loadCategoryView'])->name('category');
+        Route::get('/sub',      [ProductController::class, 'loadSubCategoryView'])->name('subCategory');
+    });
 });
 
-// 404 Not Found Route
-Route::fallback(function () {
-    return view('templates.admin.errors.page-not-found');
-});
+// 404 Fallback
+Route::fallback(fn() => view('templates.admin.errors.page-not-found'));
