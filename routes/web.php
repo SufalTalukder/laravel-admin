@@ -9,6 +9,10 @@ use App\Http\Controllers\SystemController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
+/* =========================================================================================================
+============================================ Admin Routes ==================================================
+========================================================================================================= */
+
 Route::redirect('/', '/admin/login');
 Route::redirect('/admin', '/admin/login')->name('adminLogin');
 

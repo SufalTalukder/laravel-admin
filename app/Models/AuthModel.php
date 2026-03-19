@@ -39,11 +39,19 @@ class AuthModel extends Authenticatable implements JWTSubject
         return $this->getKey();
     }
 
+    // public function getJWTCustomClaims()
+    // {
+    //     return [
+    //         'email' => $this->auth_user_email,
+    //         'role' => $this->auth_user_type
+    //     ];
+    // }
+
     public function getJWTCustomClaims()
     {
         return [
-            'email' => $this->auth_user_email,
-            'role' => $this->auth_user_type
+            'auth_user_id'   => $this->auth_user_id,
+            'auth_user_type' => $this->auth_user_type,
         ];
     }
 }
