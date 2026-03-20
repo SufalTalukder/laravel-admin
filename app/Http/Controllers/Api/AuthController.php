@@ -6,11 +6,57 @@ use App\Http\Controllers\Controller;
 use App\Models\AuthModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
+    // Auth Register
+    public function authUserRegister(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'auth_user_name'     => 'required|string|max:100',
+            'auth_user_email'    => 'required|email|max:50|unique:auth_tbl,auth_user_email',
+            'auth_user_password' => 'required|string|min:8|max:50',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status'  => 'Unprocessable Content',
+                'message' => 'Validation failed.',
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
+
+        try {
+            $data = [
+                'auth_user_name'     => $request->auth_user_name,
+                'auth_user_email'    => $request->auth_user_email,
+                'auth_user_password' => bcrypt($request->auth_user_password),
+                'auth_user_status'   => 'NO',
+                'auth_user_type'     => 'ADMIN',
+            ];
+
+            AuthModel::create($data);
+
+            return response()->json([
+                'status'  => 'Success',
+                'message' => 'Auth user registered successfully.',
+            ], 201);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json([
+                'status'  => 'Error',
+                'message' => 'Registration failed due to a database error.',
+            ], 500);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'Error',
+                'message' => 'An unexpected error occurred.',
+            ], 500);
+        }
+    }
+
     // Auth Login
     public function authUserLogin(Request $request)
     {
@@ -92,32 +138,44 @@ class AuthController extends Controller
             ], 422);
         }
 
-        $data = [
-            'auth_user_name'         => $request->auth_user_name,
-            'auth_user_email'        => $request->auth_user_email,
-            'auth_user_phone_number' => $request->auth_user_phone_number,
-            'auth_user_type'         => $request->auth_user_type,
-            'auth_user_status'       => $request->auth_user_status,
-            'auth_user_image'        => $request->auth_user_image,
-            'action_by_user_id'      => $actionByAuthUserId,
-        ];
+        try {
+            $data = [
+                'auth_user_name'         => $request->auth_user_name,
+                'auth_user_email'        => $request->auth_user_email,
+                'auth_user_phone_number' => $request->auth_user_phone_number,
+                'auth_user_type'         => $request->auth_user_type,
+                'auth_user_status'       => $request->auth_user_status,
+                'auth_user_image'        => $request->auth_user_image,
+                'action_by_user_id'      => $actionByAuthUserId,
+            ];
 
-        if ($request->filled('auth_user_password')) {
-            $data['auth_user_password'] = Hash::make($request->auth_user_password);
+            if ($request->filled('auth_user_password')) {
+                $data['auth_user_password'] = Hash::make($request->auth_user_password);
+            }
+
+            if ($isUpdate) {
+                AuthModel::where('auth_user_id', $authUserId)->update($data);
+                $message = 'Auth user updated successfully.';
+            } else {
+                AuthModel::create($data);
+                $message = 'Auth user created successfully.';
+            }
+
+            return response()->json([
+                'status'  => 'Success',
+                'message' => $message,
+            ], 200);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json([
+                'status'  => 'Error',
+                'message' => 'Failed due to a database error.',
+            ], 500);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'Error',
+                'message' => 'An unexpected error occurred.',
+            ], 500);
         }
-
-        if ($isUpdate) {
-            AuthModel::where('auth_user_id', $authUserId)->update($data);
-            $message = 'Auth user updated successfully.';
-        } else {
-            AuthModel::create($data);
-            $message = 'Auth user created successfully.';
-        }
-
-        return response()->json([
-            'status'  => 'Success',
-            'message' => $message,
-        ], 200);
     }
 
     // Fetch Auth Details

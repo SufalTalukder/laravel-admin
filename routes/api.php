@@ -5,10 +5,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /* =========================================================================================================
-============================================ API Routes ====================================================
+================================================= API Routes ===============================================
 ========================================================================================================= */
 
 Route::prefix('v1')->group(function () {
+    // Auth Register
+    Route::middleware(['api.key'])->group(function () {
+        Route::post('/auth/register', [AuthController::class, 'authUserRegister']);
+    });
+
     // Auth Login
     Route::middleware(['api.key'])->group(function () {
         Route::post('/auth/login', [AuthController::class, 'authUserLogin']);

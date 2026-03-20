@@ -93,3 +93,26 @@ ALTER TABLE app_banner_tbl
     REFERENCES auth_tbl(auth_user_id) 
     ON DELETE CASCADE   -- adjust to match your original constraint
     ON UPDATE CASCADE;
+
+## Print Log
+Log::info('Auth user registered successfully', [
+    'user_id' => $user->id,
+    'email'   => $user->auth_user_email,
+    'type'    => $user->auth_user_type,
+    'ip'      => $request->ip(),
+]);
+
+Log::error('Auth register database error', [
+    'email'   => $request->auth_user_email,
+    'error'   => $e->getMessage(),
+    'code'    => $e->getCode(),
+    'ip'      => $request->ip(),
+]);
+
+Log::critical('Auth register unexpected error', [
+    'email' => $request->auth_user_email,
+    'error' => $e->getMessage(),
+    'file'  => $e->getFile(),
+    'line'  => $e->getLine(),
+    'ip'    => $request->ip(),
+]);
