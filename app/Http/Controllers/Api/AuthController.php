@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\AuthModel;
+use App\Models\SystemActivityModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Jenssegers\Agent\Agent;
+use Stevebauman\Location\Facades\Location;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
@@ -38,7 +41,47 @@ class AuthController extends Controller
                 'auth_user_type'     => 'ADMIN',
             ];
 
-            AuthModel::create($data);
+            $authUser = AuthModel::create($data);
+
+            $agent      = new Agent();
+            $ip         = $request->ip();
+            $location   = Location::get($ip);
+
+            // Prepare common audit data
+            $auditData = [
+                'auth_method'        => 'email_password',
+                'browser'            => $agent->browser(),
+                'browser_version'    => $agent->version($agent->browser()),
+                'device_type'        => $agent->isMobile() ? 'Mobile' : ($agent->isTablet() ? 'Tablet' : 'Desktop'),
+                'device_model'       => $agent->device(),
+                'ip_address'         => $ip,
+                'operating_system'   => $agent->platform(),
+                'os_version'         => $agent->version($agent->platform()),
+                'user_agent'         => $request->userAgent(),
+                'possible_incognito' => false,
+                'referrer_url'       => $request->headers->get('referer'),
+                'session_id'         => session()->getId(),
+                'login_time'         => now()
+            ];
+
+            $geoData = [
+                'country' => optional($location)->countryName,
+                'state'   => optional($location)->regionName,
+                'city'    => optional($location)->cityName,
+                'lat'     => optional($location)->latitude,
+                'long'    => optional($location)->longitude,
+                'address' => optional($location)->cityName
+                    ? optional($location)->cityName . ', ' .
+                    optional($location)->regionName . ', ' .
+                    optional($location)->countryName
+                    : null,
+            ];
+
+            SystemActivityModel::create(array_merge($auditData, $geoData, [
+                'auth_user_id' => $authUser->auth_user_id,
+                'login_status' => 'Success',
+                'failure_reason' => null
+            ]));
 
             return response()->json([
                 'status'  => 'Success',
@@ -81,6 +124,46 @@ class AuthController extends Controller
                 'message' => 'Invalid email or password.',
             ], 401);
         }
+
+        $agent      = new Agent();
+        $ip         = $request->ip();
+        $location   = Location::get($ip);
+
+        // Prepare common audit data
+        $auditData = [
+            'auth_method'        => 'email_password',
+            'browser'            => $agent->browser(),
+            'browser_version'    => $agent->version($agent->browser()),
+            'device_type'        => $agent->isMobile() ? 'Mobile' : ($agent->isTablet() ? 'Tablet' : 'Desktop'),
+            'device_model'       => $agent->device(),
+            'ip_address'         => $ip,
+            'operating_system'   => $agent->platform(),
+            'os_version'         => $agent->version($agent->platform()),
+            'user_agent'         => $request->userAgent(),
+            'possible_incognito' => false,
+            'referrer_url'       => $request->headers->get('referer'),
+            'session_id'         => session()->getId(),
+            'login_time'         => now()
+        ];
+
+        $geoData = [
+            'country' => optional($location)->countryName,
+            'state'   => optional($location)->regionName,
+            'city'    => optional($location)->cityName,
+            'lat'     => optional($location)->latitude,
+            'long'    => optional($location)->longitude,
+            'address' => optional($location)->cityName
+                ? optional($location)->cityName . ', ' .
+                optional($location)->regionName . ', ' .
+                optional($location)->countryName
+                : null,
+        ];
+
+        SystemActivityModel::create(array_merge($auditData, $geoData, [
+            'auth_user_id' => $authUser->auth_user_id,
+            'login_status' => 'Success',
+            'failure_reason' => null
+        ]));
 
         $token = JWTAuth::fromUser($authUser);
 
