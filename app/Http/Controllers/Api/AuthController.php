@@ -264,8 +264,19 @@ class AuthController extends Controller
     // Fetch Auth Details
     public function fetchAuthUserDetails(Request $request)
     {
-        $authUserId   = $request->jwt_auth_user_id;
-        $authUserType = $request->jwt_auth_user_type;
+        $authUserId = $request->input('auth_user_id');
+
+        $validator = Validator::make($request->all(), [
+            'auth_user_id'    => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status'  => 'Unprocessable Content',
+                'message' => 'Validation failed.',
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
 
         $authUser = AuthModel::where('auth_user_id', $authUserId)->first();
 
@@ -292,9 +303,18 @@ class AuthController extends Controller
     }
 
     // Fetch All Auth Users List
-    public function fetchAuthUsersList()
+    public function fetchAuthUsersList(Request $request)
     {
-        $authUsersList = AuthModel::from('auth_tbl AS a')
+        $authUserType = $request->input('auth_user_type', '');
+
+        if (!empty($authUserType) && ($authUserType !== 'SUPER_ADMIN' && $authUserType !== 'ADMIN')) {
+            return response()->json([
+                'status'  => 'Unprocessable Content',
+                'message' => 'Invalid auth type.'
+            ], 422);
+        }
+
+        $query = AuthModel::from('auth_tbl AS a')
             ->leftJoin('auth_tbl AS b', 'a.action_by_user_id', '=', 'b.auth_user_id')
             ->select(
                 'a.auth_user_id',
@@ -307,11 +327,15 @@ class AuthController extends Controller
                 'a.created_at',
                 'a.updated_at',
                 'b.auth_user_name as actionByAuthUser'
-            )
-            ->orderBy('a.created_at', 'DESC')
-            ->get();
+            );
 
-        if (!$authUsersList) {
+        if (!empty($authUserType)) {
+            $authUsersList = $query->where('a.auth_user_type', $authUserType)->orderBy('a.created_at', 'DESC')->get();
+        } else {
+            $authUsersList = $query->orderBy('a.created_at', 'DESC')->get();
+        }
+
+        if ($authUsersList->isEmpty()) {
             return response()->json([
                 'status'    => 'Not Found',
                 'message'   => 'Auth user(s) list not found.',
@@ -330,6 +354,19 @@ class AuthController extends Controller
     public function deleteAuthUser(Request $request)
     {
         $deleteByAuthUserId = $request->input('auth_user_id');
+
+        $validator = Validator::make($request->all(), [
+            'auth_user_id'    => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status'  => 'Unprocessable Content',
+                'message' => 'Validation failed.',
+                'errors'  => $validator->errors(),
+            ], 422);
+        }
+
         $findAuthUserIfExists = AuthModel::where('auth_user_id', $deleteByAuthUserId)->first();
 
         if (!$findAuthUserIfExists) {
@@ -381,7 +418,8 @@ class AuthController extends Controller
             return response()->json([
                 'status'            => 'Success',
                 'message'           => $message,
-                'auth_user_image'   => $imageName
+                'auth_user_image'   => $imageName,
+                'auth_image_path'   => '/vendor/upload/auth/' . $imageName
             ], 200);
         }
     }
