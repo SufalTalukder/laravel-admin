@@ -21,7 +21,7 @@ class ApiKeyMiddleware
         if ($apiKey !== env('X_API_KEY') || $apiToken !== env('X_API_TOKEN')) {
             return response()->json([
                 'status'  => 'Unauthorized',
-                'message' => 'Unauthorized access.',
+                'message' => 'API key or, token invalid.',
             ], 401);
         }
 

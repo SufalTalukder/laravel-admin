@@ -1,46 +1,46 @@
 <?php
 
-use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\Admin\AuthController;
+use App\Http\Controllers\Api\User\LoginController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /* =========================================================================================================
-================================================= API Routes ===============================================
+============================================= API Admin Routes =============================================
 ========================================================================================================= */
 
 Route::prefix('v1')->group(function () {
-    // Auth Register
+    // Before Login
     Route::middleware(['api.key'])->group(function () {
         Route::post('/auth/register', [AuthController::class, 'authUserRegister']);
-    });
-
-    // Auth Login
-    Route::middleware(['api.key'])->group(function () {
         Route::post('/auth/login', [AuthController::class, 'authUserLogin']);
     });
 
-    // Fetch Auth Details
+    // After Login
     Route::middleware(['api.key', 'jwt.cookie'])->group(function () {
         Route::get('/auth/details', [AuthController::class, 'fetchAuthUserDetails']);
-    });
-
-    // Create / Update Auth User
-    Route::middleware(['api.key', 'jwt.cookie'])->group(function () {
         Route::post('/auth/save', [AuthController::class, 'createOrUpdateAuthUser']);
-    });
-
-    // Get All Auth List
-    Route::middleware(['api.key', 'jwt.cookie'])->group(function () {
         Route::get('/auth/list', [AuthController::class, 'fetchAuthUsersList']);
-    });
-
-    // Delete Auth User
-    Route::middleware(['api.key', 'jwt.cookie'])->group(function () {
         Route::delete('/auth/delete', [AuthController::class, 'deleteAuthUser']);
+        Route::post('/auth/upload-image', [AuthController::class, 'uploadImage']);
+    });
+});
+
+
+/* =========================================================================================================
+=============================================== API User Routes ============================================
+========================================================================================================= */
+
+Route::prefix('v1')->group(function () {
+    // Before Login
+    Route::middleware(['api.key'])->group(function () {
+        Route::post('/user/login',         [LoginController::class, 'userLogin']);
+        Route::post('/user/verify-otp',    [LoginController::class, 'verifyOtp']);
+        Route::post('/user/token/refresh', [LoginController::class, 'refreshToken']);
     });
 
-    // Upload Auth User
-    Route::middleware(['api.key', 'jwt.cookie'])->group(function () {
-        Route::post('/auth/upload-image', [AuthController::class, 'uploadImage']);
+    // After Login
+    Route::middleware(['api.key', 'jwt.user'])->group(function () {
+        Route::post('/user/logout',        [LoginController::class, 'logout']);
     });
 });
