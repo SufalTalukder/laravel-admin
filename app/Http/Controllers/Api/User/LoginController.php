@@ -28,38 +28,47 @@ class LoginController extends Controller
             ], 422);
         }
 
-        $user = UserModel::where('phone_number', $request->phone_number)
-            ->where('active', 'YES')
-            ->first();
+        $user = UserModel::where('phone_number', $request->phone_number)->first();
 
         if (!$user) {
-            return response()->json([
-                'status'  => 'Error',
-                'message' => 'User not found or inactive.',
-            ], 404);
+            $user = UserModel::create([
+                'phone_number'       => $request->phone_number,
+                'active'             => 'YES',
+                'user_type'          => 'USER',
+                'user_referral_code' => strtoupper(substr(md5($request->phone_number . time()), 0, 8)),
+            ]);
+            $isNewUser = true;
+        } else {
+            if ($user->active !== 'YES') {
+                return response()->json([
+                    'status'  => 'Error',
+                    'message' => 'Your account is inactive. Please contact support.',
+                ], 403);
+            }
+            $isNewUser = false;
         }
 
-        OtpModel::where('user_id', $user->user_id)
-            ->where('otp_verified', 0)
-            ->where('otp_expired', '>', now())
-            ->update(['otp_expired' => now()]);
+        $generatedOtp  = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
+        $otpExpiryTime = now()->addMinutes(5);
 
-        $generatedOtp   = str_pad(rand(0, 9999), 4, '0', STR_PAD_LEFT);
-        $otpExpiryTime  = now()->addMinutes(5);
-
-        OtpModel::create([
-            'user_id'      => $user->user_id,
-            'phone_number' => $user->phone_number,
-            'otp'          => $generatedOtp,
-            'otp_verified' => 0,
-            'otp_expired'  => $otpExpiryTime,
-        ]);
+        OtpModel::updateOrCreate(
+            [
+                'user_id' => $user->user_id,
+            ],
+            [
+                'phone_number' => $user->phone_number,
+                'otp'          => $generatedOtp,
+                'otp_verified' => 0,
+                'otp_expired'  => $otpExpiryTime,
+            ]
+        );
 
         return response()->json([
             'status'  => 'Success',
             'message' => 'OTP sent successfully.',
             'data'    => [
                 'user_id'     => $user->user_id,
+                'is_new_user' => $isNewUser,
                 'otp_expires' => $otpExpiryTime->toDateTimeString(),
                 'otp'         => $generatedOtp,
             ],

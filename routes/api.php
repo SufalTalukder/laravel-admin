@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Admin\AuthController;
 use App\Http\Controllers\Api\User\LoginController;
+use App\Http\Controllers\Api\User\MyAccountController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -41,6 +42,7 @@ Route::prefix('v1')->group(function () {
 
     // After Login
     Route::middleware(['api.key', 'jwt.user'])->group(function () {
-        Route::post('/user/logout',        [LoginController::class, 'logout']);
+        Route::post('/user/logout',         [LoginController::class, 'logout']);
+        Route::post('/user/update-details', [MyAccountController::class, 'updateUserDetails']);
     });
 });

@@ -35,9 +35,9 @@ class JwtUserApiMiddleware
             }
 
             $request->merge([
-                'auth_user_id'      => $payload->get('user_id'),
-                'auth_phone_number' => $payload->get('phone_number'),
-                'auth_user_type'    => $payload->get('user_type'),
+                'user_id'           => $payload->get('user_id'),
+                'user_phone_number' => $payload->get('phone_number'),
+                'user_type'         => $payload->get('user_type'),
             ]);
         } catch (TokenExpiredException $e) {
             return response()->json([
