@@ -43,6 +43,7 @@ Route::prefix('v1')->group(function () {
     // After Login
     Route::middleware(['api.key', 'jwt.user'])->group(function () {
         Route::post('/user/logout',         [LoginController::class, 'logout']);
+        Route::post('/user/fetch-details',  [MyAccountController::class, 'fetchUserDetails']);
         Route::post('/user/update-details', [MyAccountController::class, 'updateUserDetails']);
     });
 });

@@ -5,12 +5,71 @@ namespace App\Http\Controllers\Api\User;
 use App\Http\Controllers\Controller;
 use App\Models\UserModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 use function Symfony\Component\Clock\now;
 
 class MyAccountController extends Controller
 {
+    // Get User Details
+    public function fetchUserDetails(Request $request)
+    {
+        $userId = $request->user_id;
+
+        if (!$userId) {
+            return response()->json([
+                'status'  => 'Error',
+                'message' => 'User not found.',
+            ], 404);
+        }
+
+        try {
+            $user = UserModel::from('user_tbl')
+                ->where('user_id', $userId)
+                ->select(
+                    'user_id',
+                    'full_name',
+                    'email_address',
+                    'phone_number',
+                    'dob',
+                    'user_address',
+                    'user_referral_code',
+                    'user_image',
+                    'active'
+                )
+                ->first();
+
+            return response()->json([
+                'status'  => 'Success',
+                'message' => 'User details fetched successfully.',
+                'data'    => [
+                    'user_id'            => $user->user_id,
+                    'full_name'          => $user->full_name,
+                    'email_address'      => $user->email_address,
+                    'phone_number'       => $user->phone_number,
+                    'dob'                => $user->dob,
+                    'user_address'       => $user->user_address,
+                    'user_referral_code' => $user->user_referral_code,
+                    'user_image'         => !empty($user->user_image)
+                        ? '/vendor/upload/user/' . $user->user_image
+                        : '',
+                    'active'             => $user->active === 'YES' ? 'Yes' : 'No',
+                ],
+            ], 200);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json([
+                'status'  => 'Error',
+                'message' => 'Failed due to a database error.',
+            ], 500);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'Error',
+                'message' => 'An unexpected error occurred.',
+            ], 500);
+        }
+    }
+
     // Update User Details
     public function updateUserDetails(Request $request)
     {
