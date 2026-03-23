@@ -54,7 +54,6 @@ class MyAccountController extends Controller
                     'user_image'         => !empty($user->user_image)
                         ? '/vendor/upload/user/' . $user->user_image
                         : '',
-                    'active'             => $user->active === 'YES' ? 'Yes' : 'No',
                 ],
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
