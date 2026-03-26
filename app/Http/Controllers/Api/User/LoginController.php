@@ -25,7 +25,7 @@ class LoginController extends Controller
             return response()->json([
                 'status'  => 'Validation Error',
                 'message' => $validator->errors()->first(),
-            ], 422);
+            ], 422, ['Content-Type' => 'application/json']);
         }
 
         $user = UserModel::where('phone_number', $request->phone_number)->first();
@@ -43,7 +43,7 @@ class LoginController extends Controller
                 return response()->json([
                     'status'  => 'Error',
                     'message' => 'Your account is inactive. Please contact support.',
-                ], 403);
+                ], 403, ['Content-Type' => 'application/json']);
             }
             $isNewUser = false;
         }
@@ -72,7 +72,7 @@ class LoginController extends Controller
                 'otp_expires' => $otpExpiryTime->toDateTimeString(),
                 'otp'         => $generatedOtp,
             ],
-        ], 200);
+        ], 200, ['Content-Type' => 'application/json']);
     }
 
     // Verify OTP
@@ -87,7 +87,7 @@ class LoginController extends Controller
             return response()->json([
                 'status'  => 'Validation Error',
                 'message' => $validator->errors(),
-            ], 422);
+            ], 422, ['Content-Type' => 'application/json']);
         }
 
         $user = UserModel::where('user_id', $request->user_id)
@@ -98,7 +98,7 @@ class LoginController extends Controller
             return response()->json([
                 'status'  => 'Error',
                 'message' => 'User not found or inactive.',
-            ], 404);
+            ], 404, ['Content-Type' => 'application/json']);
         }
 
         $otpRecord = OtpModel::getValidOtp($user->user_id, $request->otp);
@@ -107,7 +107,7 @@ class LoginController extends Controller
             return response()->json([
                 'status'  => 'Error',
                 'message' => 'Invalid or expired OTP.',
-            ], 401);
+            ], 401, ['Content-Type' => 'application/json']);
         }
 
         $otpRecord->update(['otp_verified' => 1]);
@@ -134,7 +134,7 @@ class LoginController extends Controller
             return response()->json([
                 'status'  => 'Error',
                 'message' => 'Could not generate tokens.',
-            ], 500);
+            ], 500, ['Content-Type' => 'application/json']);
         }
 
         return response()->json([
@@ -153,7 +153,7 @@ class LoginController extends Controller
                     'user_type'    => $user->user_type,
                 ],
             ],
-        ], 200);
+        ], 200, ['Content-Type' => 'application/json']);
     }
 
     // Refresh Token
@@ -165,7 +165,7 @@ class LoginController extends Controller
             return response()->json([
                 'status'  => 'Error',
                 'message' => 'Refresh token is missing.',
-            ], 400);
+            ], 400, ['Content-Type' => 'application/json']);
         }
 
         try {
@@ -176,7 +176,7 @@ class LoginController extends Controller
                 return response()->json([
                     'status'  => 'Error',
                     'message' => 'Invalid refresh token.',
-                ], 401);
+                ], 401, ['Content-Type' => 'application/json']);
             }
 
             $user = UserModel::where('user_id', $payload->get('user_id'))
@@ -187,7 +187,7 @@ class LoginController extends Controller
                 return response()->json([
                     'status'  => 'Error',
                     'message' => 'User not found or inactive.',
-                ], 404);
+                ], 404, ['Content-Type' => 'application/json']);
             }
 
             JWTAuth::setToken($refreshToken)->invalidate();
@@ -214,18 +214,18 @@ class LoginController extends Controller
                 'status'  => 'Unauthorized',
                 'message' => 'Refresh token expired. Please login again.',
                 'code'    => 'REFRESH_TOKEN_EXPIRED',
-            ], 401);
+            ], 401, ['Content-Type' => 'application/json']);
         } catch (TokenInvalidException $e) {
             return response()->json([
                 'status'  => 'Unauthorized',
                 'message' => 'Refresh token is invalid.',
                 'code'    => 'REFRESH_TOKEN_INVALID',
-            ], 401);
+            ], 401, ['Content-Type' => 'application/json']);
         } catch (JWTException $e) {
             return response()->json([
                 'status'  => 'Error',
                 'message' => 'Could not process refresh token.',
-            ], 500);
+            ], 500, ['Content-Type' => 'application/json']);
         }
 
         return response()->json([
@@ -238,7 +238,7 @@ class LoginController extends Controller
                 'access_token_expires'  => $accessTokenExpiry->toDateTimeString(),
                 'refresh_token_expires' => $refreshTokenExpiry->toDateTimeString(),
             ],
-        ], 200);
+        ], 200, ['Content-Type' => 'application/json']);
     }
 
     // Logout
@@ -266,6 +266,6 @@ class LoginController extends Controller
             'status'  => 'Success',
             'message' => empty($errors) ? 'Logged out successfully.' : 'Logged out with warnings.',
             'errors'  => $errors,
-        ], 200);
+        ], 200, ['Content-Type' => 'application/json']);
     }
 }

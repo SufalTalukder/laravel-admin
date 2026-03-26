@@ -35,15 +35,19 @@ Route::prefix('v1')->group(function () {
 Route::prefix('v1')->group(function () {
     // Before Login
     Route::middleware(['api.key'])->group(function () {
-        Route::post('/user/login',         [LoginController::class, 'userLogin']);
-        Route::post('/user/verify-otp',    [LoginController::class, 'verifyOtp']);
-        Route::post('/user/token/refresh', [LoginController::class, 'refreshToken']);
+        Route::post('/user/login',          [LoginController::class, 'userLogin']);
+        Route::post('/user/verify-otp',     [LoginController::class, 'verifyOtp']);
+        Route::post('/user/token/refresh',  [LoginController::class, 'refreshToken']);
     });
 
     // After Login
     Route::middleware(['api.key', 'jwt.user'])->group(function () {
-        Route::post('/user/logout',         [LoginController::class, 'logout']);
-        Route::get('/user/fetch-details',  [MyAccountController::class, 'fetchUserDetails']);
-        Route::post('/user/update-details', [MyAccountController::class, 'updateUserDetails']);
+        Route::post('/user/logout',                 [LoginController::class, 'logout']);
+        Route::get('/user/fetch-details',           [MyAccountController::class, 'fetchUserDetails']);
+        Route::post('/user/update-details',         [MyAccountController::class, 'updateUserDetails']);
+
+        Route::post('/user/add-update-address',     [MyAccountController::class, 'addUpdateUserAddress']);
+        Route::get('/user/fetch-addresses-list',    [MyAccountController::class, 'fetchAllUserAddresses']);
+        Route::get('/user/fetch-address-details',   [MyAccountController::class, 'fetchUserAddressDetails']);
     });
 });
