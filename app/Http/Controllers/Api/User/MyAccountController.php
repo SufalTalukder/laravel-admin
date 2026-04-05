@@ -35,7 +35,6 @@ class MyAccountController extends Controller
                     'email_address',
                     'phone_number',
                     'dob',
-                    'user_address',
                     'user_referral_code',
                     'user_image',
                     'active'
@@ -51,7 +50,6 @@ class MyAccountController extends Controller
                     'email_address'      => $user->email_address,
                     'phone_number'       => $user->phone_number,
                     'dob'                => $user->dob,
-                    'user_address'       => $user->user_address,
                     'user_referral_code' => $user->user_referral_code,
                     'user_image'         => !empty($user->user_image)
                         ? '/vendor/upload/user/' . $user->user_image
@@ -80,7 +78,6 @@ class MyAccountController extends Controller
             'full_name'     => 'required|string|max:100',
             'email_address' => "required|email|max:100|unique:user_tbl,email_address,{$userId},user_id",
             'dob'           => 'required|date',
-            'user_address'  => 'required|string|max:255',
             'user_image'    => 'nullable|string|max:2048',
         ]);
 
@@ -105,7 +102,6 @@ class MyAccountController extends Controller
                 'full_name'     => $request->full_name,
                 'email_address' => $request->email_address,
                 'dob'           => $request->dob,
-                'user_address'  => $request->user_address,
                 'user_image'    => $request->user_image,
                 'updated_at'    => now(),
             ];
@@ -137,21 +133,29 @@ class MyAccountController extends Controller
         $validator = Validator::make($request->all(), [
             'user_address_id' => 'nullable|integer|exists:user_address_tbl,user_address_id',
             'address_type'    => 'required|in:Home,Office,Others',
-            'user_address'    => 'required|string|min:5|max:100'
+            'user_address'    => 'required|string|min:5|max:100',
+            'user_city'       => 'required|string|min:3|max:20',
+            'user_state'      => 'required|string|min:3|max:20',
+            'user_country'    => 'required|string|in:India',
+            'user_pincode'    => 'required|string|min:6|max:6',
         ]);
 
         if ($validator->fails()) {
             return response()->json([
                 'status'  => 'Validation Error',
                 'message' => $validator->errors(),
-            ], 422);
+            ], 422, ['Content-Type' => 'application/json']);
         }
 
         try {
             $data = [
-                'user_id'      => $userId,
-                'address_type' => $request->address_type,
-                'user_address' => $request->user_address
+                'user_id'       => $userId,
+                'address_type'  => $request->address_type,
+                'user_address'  => $request->user_address,
+                'user_city'     => $request->user_city,
+                'user_state'    => $request->user_state,
+                'user_country'  => $request->user_country,
+                'user_pincode'  => $request->user_pincode,
             ];
 
             $address = UserAddressModel::updateOrCreate(
@@ -167,19 +171,19 @@ class MyAccountController extends Controller
                 'message' => $request->user_address_id
                     ? 'Address updated successfully.'
                     : 'Address created successfully.'
-            ], 200);
+            ], 200, ['Content-Type' => 'application/json']);
         } catch (\Illuminate\Database\QueryException $e) {
             Log::error("Database error", ['error' => $e->getMessage()]);
             return response()->json([
                 'status'  => 'Error',
                 'message' => 'Database error occurred.',
-            ], 500);
+            ], 500, ['Content-Type' => 'application/json']);
         } catch (\Exception $e) {
             Log::error("Unexpected error", ['error' => $e->getMessage()]);
             return response()->json([
                 'status'  => 'Error',
                 'message' => 'An unexpected error occurred.',
-            ], 500);
+            ], 500, ['Content-Type' => 'application/json']);
         }
     }
 
@@ -194,8 +198,13 @@ class MyAccountController extends Controller
                 ->select(
                     'b.full_name',
                     'b.user_id',
+                    'a.user_address_id',
                     'a.address_type',
                     'a.user_address',
+                    'a.user_city',
+                    'a.user_state',
+                    'a.user_country',
+                    'a.user_pincode',
                     'a.created_at'
                 )
                 ->where('b.user_id', $userId)
@@ -252,6 +261,10 @@ class MyAccountController extends Controller
                     'b.user_id',
                     'a.address_type',
                     'a.user_address',
+                    'a.user_city',
+                    'a.user_state',
+                    'a.user_country',
+                    'a.user_pincode',
                     'a.created_at'
                 )
                 ->where(['b.user_id' => $userId, 'user_address_id' => $request->user_address_id])
@@ -268,6 +281,42 @@ class MyAccountController extends Controller
                 'status'  => 'Success',
                 'message' => 'Address fetched successfully.',
                 'data'    => $eachUserAddressDetails
+            ], 200, ['Content-Type' => 'application/json']);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json([
+                'status'  => 'Error',
+                'message' => 'Failed due to a database error.',
+            ], 500, ['Content-Type' => 'application/json']);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'Error',
+                'message' => 'An unexpected error occurred.',
+            ], 500, ['Content-Type' => 'application/json']);
+        }
+    }
+
+    // DELETE USER ADDRESS
+    public function deleteUserAddress(Request $request)
+    {
+        $userId = $request->user_id;
+
+        $validator = Validator::make($request->all(), [
+            'user_address_id' => 'required|integer'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status'  => 'Validation Error',
+                'message' => $validator->errors()->first(),
+            ], 422, ['Content-Type' => 'application/json']);
+        }
+
+        try {
+            UserAddressModel::where(['user_id' => $userId, 'user_address_id' => $request->user_address_id])->delete();
+
+            return response()->json([
+                'status'  => 'Success',
+                'message' => 'Address deleted successfully.'
             ], 200, ['Content-Type' => 'application/json']);
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json([

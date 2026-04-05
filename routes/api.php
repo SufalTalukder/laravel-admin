@@ -48,6 +48,7 @@ Route::prefix('v1')->group(function () {
 
         Route::post('/user/add-update-address',     [MyAccountController::class, 'addUpdateUserAddress']);
         Route::get('/user/fetch-addresses-list',    [MyAccountController::class, 'fetchAllUserAddresses']);
-        Route::get('/user/fetch-address-details',   [MyAccountController::class, 'fetchUserAddressDetails']);
+        Route::post('/user/fetch-address-details',  [MyAccountController::class, 'fetchUserAddressDetails']);
+        Route::post('/user/delete-address',         [MyAccountController::class, 'deleteUserAddress']);
     });
 });

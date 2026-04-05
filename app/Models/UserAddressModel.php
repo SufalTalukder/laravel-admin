@@ -13,6 +13,10 @@ class UserAddressModel extends Model
         'user_id',
         'address_type',
         'user_address',
+        'user_city',
+        'user_state',
+        'user_country',
+        'user_pincode',
         'created_at',
         'updated_at'
     ];

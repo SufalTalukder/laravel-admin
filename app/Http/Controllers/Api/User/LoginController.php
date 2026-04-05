@@ -113,7 +113,7 @@ class LoginController extends Controller
         $otpRecord->update(['otp_verified' => 1]);
 
         try {
-            $accessTokenExpiry  = now()->addMinutes(5);
+            $accessTokenExpiry  = now()->addMinutes(1440);
             $refreshTokenExpiry = now()->addDays(15);
 
             $accessToken = JWTAuth::customClaims([
@@ -192,7 +192,7 @@ class LoginController extends Controller
 
             JWTAuth::setToken($refreshToken)->invalidate();
 
-            $accessTokenExpiry  = now()->addMinutes(5);
+            $accessTokenExpiry  = now()->addMinutes(1440);
             $refreshTokenExpiry = now()->addDays(15);
 
             $newAccessToken = JWTAuth::customClaims([
