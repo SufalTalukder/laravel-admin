@@ -17,6 +17,7 @@ class UserAddressModel extends Model
         'user_state',
         'user_country',
         'user_pincode',
+        'set_address_default',
         'created_at',
         'updated_at'
     ];

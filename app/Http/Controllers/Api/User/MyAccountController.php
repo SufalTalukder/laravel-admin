@@ -131,13 +131,14 @@ class MyAccountController extends Controller
         $userId = $request->user_id;
 
         $validator = Validator::make($request->all(), [
-            'user_address_id' => 'nullable|integer|exists:user_address_tbl,user_address_id',
-            'address_type'    => 'required|in:Home,Office,Others',
-            'user_address'    => 'required|string|min:5|max:100',
-            'user_city'       => 'required|string|min:3|max:20',
-            'user_state'      => 'required|string|min:3|max:20',
-            'user_country'    => 'required|string|in:India',
-            'user_pincode'    => 'required|string|min:6|max:6',
+            'user_address_id'       => 'nullable|integer|exists:user_address_tbl,user_address_id',
+            'address_type'          => 'required|in:Home,Office,Others',
+            'user_address'          => 'required|string|min:5|max:100',
+            'user_city'             => 'required|string|min:3|max:20',
+            'user_state'            => 'required|string|min:3|max:20',
+            'user_country'          => 'required|string|in:India',
+            'user_pincode'          => 'required|string|min:6|max:6',
+            'set_address_default'   => 'required|boolean',
         ]);
 
         if ($validator->fails()) {
@@ -149,19 +150,28 @@ class MyAccountController extends Controller
 
         try {
             $data = [
-                'user_id'       => $userId,
-                'address_type'  => $request->address_type,
-                'user_address'  => $request->user_address,
-                'user_city'     => $request->user_city,
-                'user_state'    => $request->user_state,
-                'user_country'  => $request->user_country,
-                'user_pincode'  => $request->user_pincode,
+                'user_id'             => $userId,
+                'address_type'        => $request->address_type,
+                'user_address'        => $request->user_address,
+                'user_city'           => $request->user_city,
+                'user_state'          => $request->user_state,
+                'user_country'        => $request->user_country,
+                'user_pincode'        => $request->user_pincode,
+                'set_address_default' => $request->set_address_default,
             ];
+
+            if ($request->set_address_default == 1) {
+                UserAddressModel::where('user_id', $userId)
+                    ->when($request->user_address_id, function ($query) use ($request) {
+                        $query->where('user_address_id', '!=', $request->user_address_id);
+                    })
+                    ->update(['set_address_default' => 0]);
+            }
 
             $address = UserAddressModel::updateOrCreate(
                 [
                     'user_address_id' => $request->user_address_id,
-                    'user_id' => $userId
+                    'user_id'         => $userId,
                 ],
                 $data
             );
@@ -173,13 +183,11 @@ class MyAccountController extends Controller
                     : 'Address created successfully.'
             ], 200, ['Content-Type' => 'application/json']);
         } catch (\Illuminate\Database\QueryException $e) {
-            Log::error("Database error", ['error' => $e->getMessage()]);
             return response()->json([
                 'status'  => 'Error',
                 'message' => 'Database error occurred.',
             ], 500, ['Content-Type' => 'application/json']);
         } catch (\Exception $e) {
-            Log::error("Unexpected error", ['error' => $e->getMessage()]);
             return response()->json([
                 'status'  => 'Error',
                 'message' => 'An unexpected error occurred.',
@@ -205,6 +213,7 @@ class MyAccountController extends Controller
                     'a.user_state',
                     'a.user_country',
                     'a.user_pincode',
+                    'a.set_address_default',
                     'a.created_at'
                 )
                 ->where('b.user_id', $userId)
@@ -265,6 +274,7 @@ class MyAccountController extends Controller
                     'a.user_state',
                     'a.user_country',
                     'a.user_pincode',
+                    'a.set_address_default',
                     'a.created_at'
                 )
                 ->where(['b.user_id' => $userId, 'user_address_id' => $request->user_address_id])
