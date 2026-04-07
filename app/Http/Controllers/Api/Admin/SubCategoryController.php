@@ -3,36 +3,36 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\CategoryModel;
+use App\Models\SubCategoryModel;
 use Illuminate\Http\Request;
 
-class CategoryController extends Controller
+class SubCategoryController extends Controller
 {
-    public function fetchCategoriesList()
+    public function fetchSubCategoriesList()
     {
         try {
-            $categoriesList = CategoryModel::from('category_tbl AS c')
+            $subCategoriesList = SubCategoryModel::from('sub_category_tbl AS sc')
                 ->select(
-                    'c.category_id',
-                    'c.category_name',
-                    'c.category_image'
+                    'sc.sub_category_id',
+                    'sc.sub_category_name',
+                    'sc.sub_category_image'
                 )
-                ->where('c.category_status', 'YES')
-                ->orderBy('c.created_at', 'DESC')
+                ->where('sc.sub_category_status', 'YES')
+                ->orderBy('sc.created_at', 'DESC')
                 ->get();
 
-            if ($categoriesList->isEmpty()) {
+            if ($subCategoriesList->isEmpty()) {
                 return response()->json([
                     'success' => "Not Found",
-                    'message' => 'No categories found.',
+                    'message' => 'No subcategories found.',
                     'data' => []
                 ], 404, ['Content-Type' => 'application/json']);
             }
 
             return response()->json([
                 'success' => "Success",
-                'message' => 'Categories list fetched successfully.',
-                'data' => $categoriesList
+                'message' => 'Subcategories list fetched successfully.',
+                'data' => $subCategoriesList
             ], 200, ['Content-Type' => 'application/json']);
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json([

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Admin\AuthController;
 use App\Http\Controllers\Api\Admin\CategoryController;
+use App\Http\Controllers\Api\Admin\SubCategoryController;
 use App\Http\Controllers\Api\User\LoginController;
 use App\Http\Controllers\Api\User\MyAccountController;
 use Illuminate\Http\Request;
@@ -41,6 +42,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/user/token/refresh',  [LoginController::class, 'refreshToken']);
 
         Route::get('/category-list',        [CategoryController::class, 'fetchCategoriesList']);
+        Route::get('/subcategory-list',     [SubCategoryController::class, 'fetchSubCategoriesList']);
     });
 
     // After Login
