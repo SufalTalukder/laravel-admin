@@ -16,7 +16,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 class AuthController extends Controller
 {
     // Auth Register
-    public function authUserRegister(Request $request)
+    public function authUserRegister(Request $request): \Illuminate\Http\JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'auth_user_name'     => 'required|string|max:100',
@@ -29,7 +29,7 @@ class AuthController extends Controller
                 'status'  => 'Unprocessable Content',
                 'message' => 'Validation failed.',
                 'errors'  => $validator->errors(),
-            ], 422);
+            ], 422, ['Content-Type' => 'application/json']);
         }
 
         try {
@@ -86,22 +86,22 @@ class AuthController extends Controller
             return response()->json([
                 'status'  => 'Success',
                 'message' => 'Auth user registered successfully.',
-            ], 201);
+            ], 201, ['Content-Type' => 'application/json']);
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json([
                 'status'  => 'Error',
                 'message' => 'Registration failed due to a database error.',
-            ], 500);
+            ], 500, ['Content-Type' => 'application/json']);
         } catch (\Exception $e) {
             return response()->json([
                 'status'  => 'Error',
                 'message' => 'An unexpected error occurred.',
-            ], 500);
+            ], 500, ['Content-Type' => 'application/json']);
         }
     }
 
     // Auth Login
-    public function authUserLogin(Request $request)
+    public function authUserLogin(Request $request): \Illuminate\Http\JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'auth_user_email'    => 'required|email',
@@ -113,7 +113,7 @@ class AuthController extends Controller
                 'status'  => 'Unprocessable Content',
                 'message' => 'Validation failed.',
                 'errors'  => $validator->errors(),
-            ], 422);
+            ], 422, ['Content-Type' => 'application/json']);
         }
 
         $authUser = AuthModel::where('auth_user_email', $request->auth_user_email)->first();
@@ -122,7 +122,7 @@ class AuthController extends Controller
             return response()->json([
                 'status'  => 'Unauthorized',
                 'message' => 'Invalid email or password.',
-            ], 401);
+            ], 401, ['Content-Type' => 'application/json']);
         }
 
         $agent      = new Agent();
@@ -183,11 +183,11 @@ class AuthController extends Controller
             'status'        => 'Success',
             'message'       => 'Login successfully.',
             'accessToken'   => $token,
-        ], 200)->withCookie($cookie);
+        ], 200, ['Content-Type' => 'application/json'])->withCookie($cookie);
     }
 
     // Create / Update Auth User
-    public function createOrUpdateAuthUser(Request $request)
+    public function createOrUpdateAuthUser(Request $request): \Illuminate\Http\JsonResponse
     {
         $actionByAuthUserId = $request->jwt_auth_user_id;
 
@@ -218,7 +218,7 @@ class AuthController extends Controller
                 'status'  => 'Unprocessable Content',
                 'message' => 'Validation failed.',
                 'errors'  => $validator->errors(),
-            ], 422);
+            ], 422, ['Content-Type' => 'application/json']);
         }
 
         try {
@@ -247,22 +247,22 @@ class AuthController extends Controller
             return response()->json([
                 'status'  => 'Success',
                 'message' => $message,
-            ], 200);
+            ], 200, ['Content-Type' => 'application/json']);
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json([
                 'status'  => 'Error',
                 'message' => 'Failed due to a database error.',
-            ], 500);
+            ], 500, ['Content-Type' => 'application/json']);
         } catch (\Exception $e) {
             return response()->json([
                 'status'  => 'Error',
                 'message' => 'An unexpected error occurred.',
-            ], 500);
+            ], 500, ['Content-Type' => 'application/json']);
         }
     }
 
     // Fetch Auth Details
-    public function fetchAuthUserDetails(Request $request)
+    public function fetchAuthUserDetails(Request $request): \Illuminate\Http\JsonResponse
     {
         $authUserId = $request->input('auth_user_id');
 
@@ -275,7 +275,7 @@ class AuthController extends Controller
                 'status'  => 'Unprocessable Content',
                 'message' => 'Validation failed.',
                 'errors'  => $validator->errors(),
-            ], 422);
+            ], 422, ['Content-Type' => 'application/json']);
         }
 
         $authUser = AuthModel::where('auth_user_id', $authUserId)->first();
@@ -284,7 +284,7 @@ class AuthController extends Controller
             return response()->json([
                 'status'  => 'Not Found',
                 'message' => 'Auth user not found.',
-            ], 404);
+            ], 404, ['Content-Type' => 'application/json']);
         }
 
         return response()->json([
@@ -299,11 +299,11 @@ class AuthController extends Controller
                 'auth_user_status'       => $authUser->auth_user_status,
                 'auth_user_image'        => $authUser->auth_user_image,
             ],
-        ], 200);
+        ], 200, ['Content-Type' => 'application/json']);
     }
 
     // Fetch All Auth Users List
-    public function fetchAuthUsersList(Request $request)
+    public function fetchAuthUsersList(Request $request): \Illuminate\Http\JsonResponse
     {
         $authUserType = $request->input('auth_user_type', '');
 
@@ -311,7 +311,7 @@ class AuthController extends Controller
             return response()->json([
                 'status'  => 'Unprocessable Content',
                 'message' => 'Invalid auth type.'
-            ], 422);
+            ], 422, ['Content-Type' => 'application/json']);
         }
 
         $query = AuthModel::from('auth_tbl AS a')
@@ -340,18 +340,18 @@ class AuthController extends Controller
                 'status'    => 'Not Found',
                 'message'   => 'Auth user(s) list not found.',
                 'content'   => null
-            ], 404);
+            ], 404, ['Content-Type' => 'application/json']);
         }
 
         return response()->json([
             'status'    => 'Success',
             'message'   => 'Auth user(s) list fetched successfully.',
             'content'   => $authUsersList
-        ], 200);
+        ], 200, ['Content-Type' => 'application/json']);
     }
 
     // Delete Auth User
-    public function deleteAuthUser(Request $request)
+    public function deleteAuthUser(Request $request): \Illuminate\Http\JsonResponse
     {
         $deleteByAuthUserId = $request->input('auth_user_id');
 
@@ -364,7 +364,7 @@ class AuthController extends Controller
                 'status'  => 'Unprocessable Content',
                 'message' => 'Validation failed.',
                 'errors'  => $validator->errors(),
-            ], 422);
+            ], 422, ['Content-Type' => 'application/json']);
         }
 
         $findAuthUserIfExists = AuthModel::where('auth_user_id', $deleteByAuthUserId)->first();
@@ -373,7 +373,7 @@ class AuthController extends Controller
             return response()->json([
                 'status'    => 'Not Found',
                 'message'   => 'Auth user not found.'
-            ], 404);
+            ], 404, ['Content-Type' => 'application/json']);
         }
 
         AuthModel::where('auth_user_id', $deleteByAuthUserId)->delete();
@@ -381,7 +381,7 @@ class AuthController extends Controller
         return response()->json([
             'status'    => 'Success',
             'message'   => 'Auth user deleted successfully.'
-        ], 200);
+        ], 200, ['Content-Type' => 'application/json']);
     }
 
     // Upload Auth User Image
@@ -420,7 +420,7 @@ class AuthController extends Controller
                 'message'           => $message,
                 'auth_user_image'   => $imageName,
                 'auth_image_path'   => '/vendor/upload/auth/' . $imageName
-            ], 200);
+            ], 200, ['Content-Type' => 'application/json']);
         }
     }
 }

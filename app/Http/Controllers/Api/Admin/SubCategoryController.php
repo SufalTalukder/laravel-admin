@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class SubCategoryController extends Controller
 {
-    public function fetchSubCategoriesList()
+    public function fetchSubCategoriesList(): \Illuminate\Http\JsonResponse
     {
         try {
             $subCategoriesList = SubCategoryModel::from('sub_category_tbl AS sc')

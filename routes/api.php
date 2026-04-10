@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Admin\AuthController;
 use App\Http\Controllers\Api\Admin\CategoryController;
+use App\Http\Controllers\Api\Admin\LanguageController;
 use App\Http\Controllers\Api\Admin\SubCategoryController;
 use App\Http\Controllers\Api\User\LoginController;
 use App\Http\Controllers\Api\User\MyAccountController;
@@ -43,6 +44,7 @@ Route::prefix('v1')->group(function () {
 
         Route::get('/category-list',        [CategoryController::class, 'fetchCategoriesList']);
         Route::get('/subcategory-list',     [SubCategoryController::class, 'fetchSubCategoriesList']);
+        Route::get('/language-list',        [LanguageController::class, 'fetchLanguagesList']);
     });
 
     // After Login

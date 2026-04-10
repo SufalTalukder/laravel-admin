@@ -3,36 +3,36 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\CategoryModel;
+use App\Models\LanguageModel;
 use Illuminate\Http\Request;
 
-class CategoryController extends Controller
+class LanguageController extends Controller
 {
-    public function fetchCategoriesList(): \Illuminate\Http\JsonResponse
+    public function fetchLanguagesList(): \Illuminate\Http\JsonResponse
     {
         try {
-            $categoriesList = CategoryModel::from('category_tbl AS c')
+            $languagesList = LanguageModel::from('language_tbl AS l')
                 ->select(
-                    'c.category_id',
-                    'c.category_name',
-                    'c.category_image'
+                    'l.language_id',
+                    'l.language_name',
+                    'l.language_image'
                 )
-                ->where('c.category_status', 'YES')
-                ->orderBy('c.created_at', 'DESC')
+                ->where('l.language_status', 'YES')
+                ->orderBy('l.created_at', 'DESC')
                 ->get();
 
-            if ($categoriesList->isEmpty()) {
+            if ($languagesList->isEmpty()) {
                 return response()->json([
                     'success' => "Not Found",
-                    'message' => 'No categories found.',
+                    'message' => 'No languages found.',
                     'data' => []
                 ], 404, ['Content-Type' => 'application/json']);
             }
 
             return response()->json([
                 'success' => "Success",
-                'message' => 'Categories list fetched successfully.',
-                'data' => $categoriesList
+                'message' => 'Languages list fetched successfully.',
+                'data' => $languagesList
             ], 200, ['Content-Type' => 'application/json']);
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json([
