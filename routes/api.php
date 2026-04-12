@@ -38,14 +38,16 @@ Route::prefix('v1')->group(function () {
 Route::prefix('v1')->group(function () {
     // Before Login
     Route::middleware(['api.key'])->group(function () {
-        Route::post('/user/login',              [LoginController::class, 'userLogin']);
-        Route::post('/user/verify-otp',         [LoginController::class, 'verifyOtp']);
-        Route::post('/user/token/refresh',      [LoginController::class, 'refreshToken']);
+        Route::post('/user/login',                  [LoginController::class, 'userLogin']);
+        Route::post('/user/verify-otp',             [LoginController::class, 'verifyOtp']);
+        Route::post('/user/token/refresh',          [LoginController::class, 'refreshToken']);
 
-        Route::get('/category-list',            [CategoryController::class, 'fetchCategoriesList']);
-        Route::post('/category-wise-products',  [CategoryController::class, 'fetchCategoryWiseProducts']);
-        Route::get('/subcategory-list',         [SubCategoryController::class, 'fetchSubCategoriesList']);
-        Route::get('/language-list',            [LanguageController::class, 'fetchLanguagesList']);
+        Route::get('/category-list',                [CategoryController::class, 'fetchCategoriesList']);
+        Route::post('/category-wise-products',      [CategoryController::class, 'fetchCategoryWiseProducts']);
+        Route::get('/subcategory-list',             [SubCategoryController::class, 'fetchSubCategoriesList']);
+        Route::post('/subcategory-wise-products',   [SubCategoryController::class, 'fetchSubCategoryWiseProducts']);
+        Route::get('/language-list',                [LanguageController::class, 'fetchLanguagesList']);
+        Route::post('/language-wise-products',      [LanguageController::class, 'fetchLanguageWiseProducts']);
     });
 
     // After Login

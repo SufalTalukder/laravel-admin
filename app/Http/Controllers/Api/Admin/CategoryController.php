@@ -66,6 +66,7 @@ class CategoryController extends Controller
                     'p.product_image',
                     'p.product_price',
                     'p.product_code',
+                    'p.product_availability',
                     'p.product_details',
                     'p.product_stock'
                 )
@@ -94,7 +95,7 @@ class CategoryController extends Controller
                 'message' => 'Failed due to a database error.',
             ], 500, ['Content-Type' => 'application/json']);
         } catch (\Exception $e) {
-            Log::error('Database Query Exception: ' . $e->getMessage(), ['exception' => $e]);
+            Log::error('Unexpected Exception: ' . $e->getMessage(), ['exception' => $e]);
             return response()->json([
                 'status'  => 'Error',
                 'message' => 'An unexpected error occurred.',

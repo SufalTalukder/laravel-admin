@@ -12,6 +12,7 @@ class SubCategoryModel extends Model
     protected $fillable = [
         'auth_user_id',
         'sub_category_name',
+        'sub_category_slug',
         'sub_category_image',
         'sub_category_status',
         'created_at',
