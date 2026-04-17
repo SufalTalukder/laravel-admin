@@ -63,6 +63,7 @@ class LanguageController extends Controller
                 ->select(
                     'p.product_id',
                     'p.product_name',
+                    'p.product_slug',
                     'p.product_image',
                     'p.product_price',
                     'p.product_code',

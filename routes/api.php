@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\Admin\LanguageController;
 use App\Http\Controllers\Api\Admin\SubCategoryController;
 use App\Http\Controllers\Api\User\LoginController;
 use App\Http\Controllers\Api\User\MyAccountController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -48,6 +49,7 @@ Route::prefix('v1')->group(function () {
         Route::post('/subcategory-wise-products',   [SubCategoryController::class, 'fetchSubCategoryWiseProducts']);
         Route::get('/language-list',                [LanguageController::class, 'fetchLanguagesList']);
         Route::post('/language-wise-products',      [LanguageController::class, 'fetchLanguageWiseProducts']);
+        Route::post('/product-details',             [ProductController::class, 'fetchProductDetails']);
     });
 
     // After Login
@@ -61,4 +63,11 @@ Route::prefix('v1')->group(function () {
         Route::post('/user/fetch-address-details',  [MyAccountController::class, 'fetchUserAddressDetails']);
         Route::post('/user/delete-address',         [MyAccountController::class, 'deleteUserAddress']);
     });
+});
+
+Route::fallback(function () {
+    return response()->json([
+        'status' => 'Error',
+        'message' => 'Invalid API route.'
+    ], 404);
 });
