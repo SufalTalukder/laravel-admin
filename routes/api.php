@@ -50,6 +50,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/language-list',                [LanguageController::class, 'fetchLanguagesList']);
         Route::post('/language-wise-products',      [LanguageController::class, 'fetchLanguageWiseProducts']);
         Route::post('/product-details',             [ProductController::class, 'fetchProductDetails']);
+        Route::post('/fetch-featured-products',     [ProductController::class, 'fetchFeaturedProducts']);
     });
 
     // After Login

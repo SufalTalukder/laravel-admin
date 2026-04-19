@@ -19,6 +19,8 @@ class ProductModel extends Model
         'product_code',
         'bound_type',
         'book_size',
+        'best_seller',
+        'new_arrival',
         'product_availability',
         'product_price',
         'product_details',
