@@ -10,6 +10,7 @@ class LanguageModel extends Model
     protected $primaryKey = 'language_id';
 
     protected $fillable = [
+        'event_id',
         'language_name',
         'language_slug',
         'language_status',

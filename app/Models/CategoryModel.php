@@ -10,6 +10,7 @@ class CategoryModel extends Model
     protected $primaryKey = 'category_id';
 
     protected $fillable = [
+        'event_id',
         'auth_user_id',
         'category_name',
         'category_slug',

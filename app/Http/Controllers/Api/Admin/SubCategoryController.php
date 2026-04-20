@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\SubCategoryModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class SubCategoryController extends Controller
 {
@@ -15,6 +16,7 @@ class SubCategoryController extends Controller
             $subCategoriesList = SubCategoryModel::from('sub_category_tbl AS sc')
                 ->select(
                     'sc.sub_category_id',
+                    'sc.event_id',
                     'sc.sub_category_name',
                     'sc.sub_category_slug',
                     'sc.sub_category_image'
@@ -52,16 +54,27 @@ class SubCategoryController extends Controller
     public function fetchSubCategoryWiseProducts(Request $request): \Illuminate\Http\JsonResponse
     {
         try {
-            $request->validate([
-                'sub_category_id' => 'required|integer|exists:sub_category_tbl,sub_category_id',
+            $subCategoryId = $request->input('sub_category_id');
+            $eventId = $request->input('event_id');
+
+            $validator = Validator::make($request->all(), [
+                'sub_category_id'   => 'required|integer|exists:sub_category_tbl,sub_category_id',
+                'event_id'          => 'required|string|exists:sub_category_tbl,event_id',
             ]);
 
-            $subCategoryId = $request->input('sub_category_id');
+            if ($validator->fails()) {
+                return response()->json([
+                    'status'  => 'Unprocessable Content',
+                    'message' => 'Validation failed.',
+                    'errors'  => $validator->errors(),
+                ], 422, ['Content-Type' => 'application/json']);
+            }
 
             $productsList = SubCategoryModel::from('sub_category_tbl AS sc')
                 ->join('product_tbl AS p', 'sc.sub_category_id', '=', 'p.sub_category_id')
                 ->select(
                     'p.product_id',
+                    'p.event_id',
                     'p.product_name',
                     'p.product_slug',
                     'p.product_image',
@@ -72,6 +85,7 @@ class SubCategoryController extends Controller
                     'p.product_stock'
                 )
                 ->where('sc.sub_category_id', $subCategoryId)
+                ->where('sc.event_id', $eventId)
                 ->where('p.status', 'YES')
                 ->orderBy('p.created_at', 'DESC')
                 ->get();

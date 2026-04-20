@@ -14,17 +14,19 @@ class ProductController extends Controller
     {
         try {
             $productSlug = $request->input('product_slug');
+            $eventId = $request->input('event_id');
 
             $validator = Validator::make($request->all(), [
                 'product_slug' => 'required|string|exists:product_tbl,product_slug',
+                'event_id'     => 'required|string|exists:product_tbl,event_id',
             ]);
 
             if ($validator->fails()) {
                 return response()->json([
                     'status'  => 'Unprocessable Content',
                     'message' => 'Validation failed.',
-                    'errors'  => $validator->errors()->first(),
-                ], 422);
+                    'errors'  => $validator->errors(),
+                ], 422, ['Content-Type' => 'application/json']);
             }
 
             $productDetails = ProductModel::from('product_tbl AS p')
@@ -33,16 +35,20 @@ class ProductController extends Controller
                 ->leftJoin('language_tbl AS l', 'p.language_id', '=', 'l.language_id')
                 ->select(
                     'p.product_id',
+                    'p.event_id AS p_event_id',
                     'p.product_name',
                     'p.category_id',
                     'c.category_name',
                     'c.category_slug',
+                    'c.event_id AS c_event_id',
                     'p.sub_category_id',
                     'sc.sub_category_name',
                     'sc.sub_category_slug',
+                    'sc.event_id AS sc_event_id',
                     'p.language_id',
                     'l.language_name',
                     'l.language_slug',
+                    'l.event_id AS l_event_id',
                     'p.product_slug',
                     'p.product_brand',
                     'p.product_code',
@@ -57,6 +63,7 @@ class ProductController extends Controller
                     'p.product_stock'
                 )
                 ->where('p.product_slug', $productSlug)
+                ->where('p.event_id', $eventId)
                 ->where('p.status', 'YES')
                 ->first();
 
@@ -65,14 +72,14 @@ class ProductController extends Controller
                     'success' => "Not Found",
                     'message' => 'Product not found.',
                     'data' => null
-                ], 404);
+                ], 404, ['Content-Type' => 'application/json']);
             }
 
             return response()->json([
                 'success' => "Success",
                 'message' => 'Product details fetched successfully.',
                 'data' => $productDetails
-            ], 200);
+            ], 200, ['Content-Type' => 'application/json']);
         } catch (\Illuminate\Database\QueryException $e) {
             Log::error('Database Query Exception: ' . $e->getMessage(), ['exception' => $e]);
             return response()->json([
@@ -105,7 +112,7 @@ class ProductController extends Controller
                     'status'  => 'Unprocessable Content',
                     'message' => 'Validation failed.',
                     'errors'  => $validator->errors(),
-                ], 422);
+                ], 422, ['Content-Type' => 'application/json']);
             }
 
             $featuredProducts = ProductModel::from('product_tbl AS p')
@@ -114,16 +121,20 @@ class ProductController extends Controller
                 ->leftJoin('language_tbl AS l', 'p.language_id', '=', 'l.language_id')
                 ->select(
                     'p.product_id',
+                    'p.event_id AS p_event_id',
                     'p.product_name',
                     'p.category_id',
                     'c.category_name',
                     'c.category_slug',
+                    'c.event_id AS c_event_id',
                     'p.sub_category_id',
                     'sc.sub_category_name',
                     'sc.sub_category_slug',
+                    'sc.event_id AS sc_event_id',
                     'p.language_id',
                     'l.language_name',
                     'l.language_slug',
+                    'l.event_id AS l_event_id',
                     'p.product_slug',
                     'p.product_brand',
                     'p.product_code',
@@ -148,14 +159,14 @@ class ProductController extends Controller
                     'success' => "Not Found",
                     'message' => "No featured products found matching the criteria.",
                     'data' => []
-                ], 404);
+                ], 404, ['Content-Type' => 'application/json']);
             }
 
             return response()->json([
                 'success' => "Success",
                 'message' => "Featured products fetched successfully.",
                 'data' => $featuredProducts
-            ], 200);
+            ], 200, ['Content-Type' => 'application/json']);
         } catch (\Illuminate\Database\QueryException $e) {
             Log::error('Database Query Exception: ' . $e->getMessage(), ['exception' => $e]);
             return response()->json([

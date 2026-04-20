@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\LanguageModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class LanguageController extends Controller
 {
@@ -15,6 +16,7 @@ class LanguageController extends Controller
             $languagesList = LanguageModel::from('language_tbl AS l')
                 ->select(
                     'l.language_id',
+                    'l.event_id',
                     'l.language_name',
                     'l.language_slug',
                     'l.language_image'
@@ -52,16 +54,27 @@ class LanguageController extends Controller
     public function fetchLanguageWiseProducts(Request $request): \Illuminate\Http\JsonResponse
     {
         try {
-            $request->validate([
-                'language_id' => 'required|integer|exists:language_tbl,language_id',
+            $languageId = $request->input('language_id');
+            $eventId = $request->input('event_id');
+
+            $validator = Validator::make($request->all(), [
+                'language_id'   => 'required|integer|exists:language_tbl,language_id',
+                'event_id'      => 'required|string|exists:language_tbl,event_id',
             ]);
 
-            $languageId = $request->input('language_id');
+            if ($validator->fails()) {
+                return response()->json([
+                    'status'  => 'Unprocessable Content',
+                    'message' => 'Validation failed.',
+                    'errors'  => $validator->errors(),
+                ], 422, ['Content-Type' => 'application/json']);
+            }
 
             $productsList = LanguageModel::from('language_tbl AS l')
                 ->join('product_tbl AS p', 'l.language_id', '=', 'p.language_id')
                 ->select(
                     'p.product_id',
+                    'p.event_id',
                     'p.product_name',
                     'p.product_slug',
                     'p.product_image',
@@ -72,6 +85,7 @@ class LanguageController extends Controller
                     'p.product_stock'
                 )
                 ->where('l.language_id', $languageId)
+                ->where('l.event_id', $eventId)
                 ->where('p.status', 'YES')
                 ->orderBy('p.created_at', 'DESC')
                 ->get();

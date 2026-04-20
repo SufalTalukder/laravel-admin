@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CategoryModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
@@ -15,6 +16,7 @@ class CategoryController extends Controller
             $categoriesList = CategoryModel::from('category_tbl AS c')
                 ->select(
                     'c.category_id',
+                    'c.event_id',
                     'c.category_name',
                     'c.category_slug',
                     'c.category_image'
@@ -52,16 +54,27 @@ class CategoryController extends Controller
     public function fetchCategoryWiseProducts(Request $request): \Illuminate\Http\JsonResponse
     {
         try {
-            $request->validate([
-                'category_id' => 'required|integer|exists:category_tbl,category_id',
+            $categoryId = $request->input('category_id');
+            $eventId = $request->input('event_id');
+
+            $validator = Validator::make($request->all(), [
+                'category_id'   => 'required|integer|exists:category_tbl,category_id',
+                'event_id'      => 'required|string|exists:category_tbl,event_id',
             ]);
 
-            $categoryId = $request->input('category_id');
+            if ($validator->fails()) {
+                return response()->json([
+                    'status'  => 'Unprocessable Content',
+                    'message' => 'Validation failed.',
+                    'errors'  => $validator->errors(),
+                ], 422, ['Content-Type' => 'application/json']);
+            }
 
             $productsList = CategoryModel::from('category_tbl AS c')
                 ->join('product_tbl AS p', 'c.category_id', '=', 'p.category_id')
                 ->select(
                     'p.product_id',
+                    'p.event_id',
                     'p.product_name',
                     'p.product_slug',
                     'p.product_image',
@@ -72,6 +85,7 @@ class CategoryController extends Controller
                     'p.product_stock'
                 )
                 ->where('c.category_id', $categoryId)
+                ->where('c.event_id', $eventId)
                 ->where('p.status', 'YES')
                 ->orderBy('p.created_at', 'DESC')
                 ->get();

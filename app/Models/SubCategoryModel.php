@@ -10,6 +10,7 @@ class SubCategoryModel extends Model
     protected $primaryKey = 'sub_category_id';
 
     protected $fillable = [
+        'event_id',
         'auth_user_id',
         'sub_category_name',
         'sub_category_slug',
