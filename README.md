@@ -116,3 +116,10 @@ Log::critical('Auth register unexpected error', [
     'line'  => $e->getLine(),
     'ip'    => $request->ip(),
 ]);
+
+// 5 Types of Avatar of Bhagwan Shree Hari Vishnu
+// Aansha Avatar (Varaha/Matsya/Kurma avatar)
+// Aavesha Avatar (Dattatraya/Budhha avatar)
+// Vishishtha Avatar (Narashimha avatar)
+// Purna Avatar (Ram/Krishna/Kalki avatar)
+// Mahapurusha Avatar (Acharyacharan avatar)

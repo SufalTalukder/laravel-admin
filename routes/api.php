@@ -63,6 +63,12 @@ Route::prefix('v1')->group(function () {
         Route::get('/user/fetch-addresses-list',    [MyAccountController::class, 'fetchAllUserAddresses']);
         Route::post('/user/fetch-address-details',  [MyAccountController::class, 'fetchUserAddressDetails']);
         Route::post('/user/delete-address',         [MyAccountController::class, 'deleteUserAddress']);
+
+        Route::post('/add-recently-viewed-product', [ProductController::class, 'addRecentlyViewedProduct']);
+        Route::post('/recently-viewed-products',    [ProductController::class, 'fetchRecentlyViewedProducts']);
+        Route::post('/manage-wishlist',             [ProductController::class, 'manageWishlist']);
+        Route::post('/fetch-wishlist',              [ProductController::class, 'fetchWishlistOfUser']);
+        Route::post('/fetch-all-wishlists',         [ProductController::class, 'fetchAllWishlistsOfUser']);
     });
 });
 
