@@ -69,6 +69,9 @@ Route::prefix('v1')->group(function () {
         Route::post('/manage-wishlist',             [ProductController::class, 'manageWishlist']);
         Route::post('/fetch-wishlist',              [ProductController::class, 'fetchWishlistOfUser']);
         Route::post('/fetch-all-wishlists',         [ProductController::class, 'fetchAllWishlistsOfUser']);
+        Route::post('/user/manage-cart',            [ProductController::class, 'manageUserCart']);
+        Route::post('/user/fetch-cart',             [ProductController::class, 'fetchUserCart']);
+        Route::post('/user/fetch-all-carts',        [ProductController::class, 'fetchAllUserCarts']);
     });
 });
 
