@@ -810,4 +810,73 @@ class ProductController extends Controller
             ], 500, ['Content-Type' => 'application/json']);
         }
     }
+
+    public function searchProducts(Request $request): \Illuminate\Http\JsonResponse
+    {
+        try {
+            $query = $request->input('query');
+
+            $validator = Validator::make($request->all(), [
+                'query' => 'required|string|min:3',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status'  => 'Unprocessable Content',
+                    'message' => 'Validation failed.',
+                    'errors'  => $validator->errors()->first(),
+                ], 422, ['Content-Type' => 'application/json']);
+            }
+
+            $products = ProductModel::from('product_tbl AS p')
+                ->leftJoin('category_tbl AS c',      'p.category_id',     '=', 'c.category_id')
+                ->leftJoin('sub_category_tbl AS sc', 'p.sub_category_id', '=', 'sc.sub_category_id')
+                ->leftJoin('language_tbl AS l',      'p.language_id',     '=', 'l.language_id')
+                ->select(
+                    'p.product_id',
+                    'p.event_id',
+                    'p.product_name',
+                    'p.product_slug',
+                    'p.product_image',
+                    'sc.sub_category_name',
+                    'l.language_name'
+                )
+                ->where('p.status', 'YES')
+                ->where(function ($q) use ($query) {
+                    $q->where('p.product_name',          'LIKE', "%{$query}%")
+                        ->orWhere('p.product_code',         'LIKE', "%{$query}%")
+                        ->orWhere('sc.sub_category_name',   'LIKE', "%{$query}%")
+                        ->orWhere('l.language_name',        'LIKE', "%{$query}%");
+                })
+                ->orderBy('p.created_at', 'DESC')
+                ->limit(10)
+                ->get();
+
+            if ($products->isEmpty()) {
+                return response()->json([
+                    'success' => "Not Found",
+                    'message' => "No products found matching the search query.",
+                    'data' => []
+                ], 404, ['Content-Type' => 'application/json']);
+            }
+
+            return response()->json([
+                'success' => "Success",
+                'message' => "Products fetched successfully.",
+                'data' => $products
+            ], 200, ['Content-Type' => 'application/json']);
+        } catch (\Illuminate\Database\QueryException $e) {
+            Log::error('Database Query Exception: ' . $e->getMessage(), ['exception' => $e]);
+            return response()->json([
+                'status'  => 'Error',
+                'message' => 'Failed due to a database error.',
+            ], 500, ['Content-Type' => 'application/json']);
+        } catch (\Exception $e) {
+            Log::error('Unexpected Exception: ' . $e->getMessage(), ['exception' => $e]);
+            return response()->json([
+                'status'  => 'Error',
+                'message' => 'An unexpected error occurred.',
+            ], 500, ['Content-Type' => 'application/json']);
+        }
+    }
 }
