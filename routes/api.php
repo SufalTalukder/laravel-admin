@@ -74,6 +74,8 @@ Route::prefix('v1')->group(function () {
         Route::post('/user/manage-cart',            [ProductController::class, 'manageUserCart']);
         Route::post('/user/fetch-cart',             [ProductController::class, 'fetchUserCart']);
         Route::post('/user/fetch-all-carts',        [ProductController::class, 'fetchAllUserCarts']);
+        Route::post('/user/review-product',         [ProductController::class, 'manageReviewProduct']);
+        Route::post('/user/fetch-product-reviews',  [ProductController::class, 'fetchProductReviews']);
     });
 });
 

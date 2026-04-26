@@ -7,6 +7,7 @@ use App\Models\AddToCartModel;
 use App\Models\AddToWishlistModel;
 use App\Models\ProductModel;
 use App\Models\RecentlyViewedProductModel;
+use App\Models\ReviewProductModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -864,6 +865,168 @@ class ProductController extends Controller
                 'success' => "Success",
                 'message' => "Products fetched successfully.",
                 'data' => $products
+            ], 200, ['Content-Type' => 'application/json']);
+        } catch (\Illuminate\Database\QueryException $e) {
+            Log::error('Database Query Exception: ' . $e->getMessage(), ['exception' => $e]);
+            return response()->json([
+                'status'  => 'Error',
+                'message' => 'Failed due to a database error.',
+            ], 500, ['Content-Type' => 'application/json']);
+        } catch (\Exception $e) {
+            Log::error('Unexpected Exception: ' . $e->getMessage(), ['exception' => $e]);
+            return response()->json([
+                'status'  => 'Error',
+                'message' => 'An unexpected error occurred.',
+            ], 500, ['Content-Type' => 'application/json']);
+        }
+    }
+
+    public function manageReviewProduct(Request $request): \Illuminate\Http\JsonResponse
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'product_id'   => 'required|integer|exists:product_tbl,product_id',
+                'user_id'      => 'required|integer|exists:user_tbl,user_id',
+                'user_rating'  => 'required|integer|min:1|max:5',
+                'user_comment' => 'nullable|string|max:1000',
+                'action'       => 'required|in:add,update,delete',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status'  => 'Unprocessable Content',
+                    'message' => 'Validation failed.',
+                    'errors'  => $validator->errors(),
+                ], 422);
+            }
+
+            $productId   = (int) $request->input('product_id');
+            $userId      = (int) $request->input('user_id');
+            $userRating  = $request->input('user_rating');
+            $userComment = $request->input('user_comment') ?: null;
+            $action      = $request->input('action');
+
+            $reviewProduct = ReviewProductModel::where('product_id', $productId)
+                ->where('user_id', $userId)
+                ->first();
+
+            switch ($action) {
+
+                case 'add':
+                    if ($reviewProduct) {
+                        return response()->json([
+                            'status'  => 'Error',
+                            'message' => 'Review already exists. Use update action.',
+                        ], 409, ['Content-Type' => 'application/json']);
+                    }
+                    ReviewProductModel::create([
+                        'event_id'     => generate_event_id(),
+                        'auth_user_id' => 0,
+                        'product_id'   => $productId,
+                        'user_id'      => $userId,
+                        'user_rating'  => $userRating,
+                        'user_comment' => $userComment,
+                    ]);
+                    return response()->json([
+                        'status'  => 'Success',
+                        'message' => 'Product review submitted successfully.',
+                    ], 200, ['Content-Type' => 'application/json']);
+
+                case 'update':
+                    if (!$reviewProduct) {
+                        return response()->json([
+                            'status'  => 'Error',
+                            'message' => 'No review found to update.',
+                        ], 404, ['Content-Type' => 'application/json']);
+                    }
+                    $reviewProduct->update([
+                        'user_rating'  => $userRating,
+                        'user_comment' => $userComment,
+                        'updated_at'   => now(),
+                    ]);
+                    return response()->json([
+                        'status'  => 'Success',
+                        'message' => 'Product review updated successfully.',
+                    ], 200, ['Content-Type' => 'application/json']);
+
+                case 'delete':
+                    if (!$reviewProduct) {
+                        return response()->json([
+                            'status'  => 'Error',
+                            'message' => 'No review found to delete.',
+                        ], 404, ['Content-Type' => 'application/json']);
+                    }
+                    $reviewProduct->delete();
+                    return response()->json([
+                        'status'  => 'Success',
+                        'message' => 'Product review deleted successfully.',
+                    ], 200, ['Content-Type' => 'application/json']);
+
+                default:
+                    return response()->json([
+                        'status'  => 'Error',
+                        'message' => 'Invalid action provided.',
+                    ], 422, ['Content-Type' => 'application/json']);
+            }
+        } catch (\Illuminate\Database\QueryException $e) {
+            Log::error('Database Query Exception: ' . $e->getMessage(), ['exception' => $e]);
+            return response()->json([
+                'status'  => 'Error',
+                'message' => 'Failed due to a database error.',
+            ], 500, ['Content-Type' => 'application/json']);
+        } catch (\Exception $e) {
+            Log::error('Unexpected Exception: ' . $e->getMessage(), ['exception' => $e]);
+            return response()->json([
+                'status'  => 'Error',
+                'message' => 'An unexpected error occurred.',
+            ], 500, ['Content-Type' => 'application/json']);
+        }
+    }
+
+    public function fetchProductReviews(Request $request): \Illuminate\Http\JsonResponse
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'product_id' => 'required|integer|exists:product_tbl,product_id',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'status'  => 'Unprocessable Content',
+                    'message' => 'Validation failed.',
+                    'errors'  => $validator->errors()->first(),
+                ], 422, ['Content-Type' => 'application/json']);
+            }
+
+            $productId = (int) $request->input('product_id');
+
+            $reviews = ReviewProductModel::from('user_rating_tbl AS r')
+                ->leftJoin('user_tbl AS u', 'r.user_id', '=', 'u.user_id')
+                ->select(
+                    'r.user_rating_id',
+                    'r.product_id',
+                    'r.user_id',
+                    'u.full_name AS user_name',
+                    'r.user_rating',
+                    'r.user_comment',
+                    'r.created_at'
+                )
+                ->where('r.product_id', $productId)
+                ->orderBy('r.created_at', 'DESC')
+                ->get();
+
+            if ($reviews->isEmpty()) {
+                return response()->json([
+                    'success' => "Not Found",
+                    'message' => "No reviews found for the specified product.",
+                    'data' => []
+                ], 404, ['Content-Type' => 'application/json']);
+            }
+
+            return response()->json([
+                'success' => "Success",
+                'message' => "Product reviews fetched successfully.",
+                'data' => $reviews
             ], 200, ['Content-Type' => 'application/json']);
         } catch (\Illuminate\Database\QueryException $e) {
             Log::error('Database Query Exception: ' . $e->getMessage(), ['exception' => $e]);
